@@ -7,8 +7,13 @@ export default class Cart extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @hasMany(() => Item)
-  declare item: HasMany<typeof Item>
+  @hasMany(() => Item, {
+    foreignKey: 'cart_id',
+  })
+  declare items: HasMany<typeof Item>
+
+  @column()
+  declare user_id: number
 
   @column()
   declare cart_price: number

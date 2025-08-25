@@ -27,7 +27,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare password: string
 
   @hasOne(() => Cart, {
-    foreignKey: 'cart_id',
+    foreignKey: 'user_id',
   })
   declare cart: HasOne<typeof Cart>
 

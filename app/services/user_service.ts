@@ -5,7 +5,7 @@ import { CartService } from './cart_service.js'
 const cartService = new CartService()
 
 export class UserService {
-  async createUser(data: any) {
+  async createUser(data: Partial<User>) {
     const user = await User.create({
       user_name: data.user_name,
       email: data.email,

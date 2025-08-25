@@ -11,6 +11,9 @@ export default class Item extends BaseModel {
   declare product: HasOne<typeof Product>
 
   @column()
+  declare cart_id: number
+
+  @column()
   declare product_quantity: number
 
   @column()
