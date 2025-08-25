@@ -2,27 +2,29 @@ import User from '#models/user'
 
 import { CartService } from './cart_service.js'
 
-const cartService = new CartService()
-
 export class UserService {
-  async createUser(data: Partial<User>) {
-    const user = await User.create({
-      user_name: data.user_name,
-      email: data.email,
-      password: data.password,
-      cpf: data.cpf,
-      fone: data.fone,
-      cep: data.cep,
-      estado: data.estado,
-      cidade: data.cidade,
-      bairro: data.bairro,
-      logradouro: data.logradouro,
-    })
-    const cart = await cartService.createCart()
+  static async getAll() {
+    return await User.all()
+  }
 
-    return {
-      user,
-      cart,
-    }
+  static async getById(id: number) {
+    return await User.findOrFail(id)
+  }
+
+  static async create(data: Partial<User>) {
+    return await User.create(data)
+  }
+
+  static async update(id: number, data: Partial<User>) {
+    const user = await User.findOrFail(id)
+    user.merge(data)
+    await user.save()
+    return user
+  }
+
+  static async delete(id: number) {
+    const user = await User.findOrFail(id)
+    await user.delete()
+    return { message: 'User deleted successfully' }
   }
 }
