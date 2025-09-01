@@ -2,45 +2,37 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { UserService } from '#services/user_service'
 
 export default class UsersController {
-  /**
-   * Display a list of resource
-   */
+  constructor(protected userService: UserService) {}
+
+  //save user
+  async store({ request, response }: HttpContext) {
+    console.log(request.body())
+    // const body = request.body()
+    // const user = await this.userService.create(body)
+    return response.created({ data: request.body() })
+  }
+
+  //query all users
   async index({ response }: HttpContext) {
-    const users = await UserService.getAll()
+    const users = await this.userService.getAll()
     return response.ok({ data: users })
   }
 
-  /**
-   * Handle form submission for the create action
-   */
-  async store({ request, response }: HttpContext) {
-    console.log(request.body())
-    const body = request.body()
-    const user = await UserService.create(body)
-    return response.created({ data: user })
-  }
-
-  /**
-   * Show individual record
-   */
+  //show unique user
   async show({ params, response }: HttpContext) {
-    const user = await UserService.getById(params.id)
+    const user = await this.userService.getById(params.id)
     return response.ok({ data: user })
   }
 
-  /**
-   * Handle form submission for the edit action
-   */
+  //update user
   async update({ params, request, response }: HttpContext) {
-    const user = await UserService.update(params.id, request.body())
+    const user = await this.userService.update(params.id, request.body())
     return response.ok({ data: user })
   }
 
-  /**
-   * Delete record
-   */
+  //delete user
   async destroy({ params, response }: HttpContext) {
-    const user = await UserService.delete(params.id)
+    const user = await this.userService.delete(params.id)
     return response.ok(user)
   }
 }
