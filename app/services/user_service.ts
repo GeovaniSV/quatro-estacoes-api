@@ -1,6 +1,6 @@
-import User from '#models/user'
+import { v4 as uuidv4 } from 'uuid'
 
-import { CartService } from './cart_service.js'
+import User from '#models/user'
 
 export class UserService {
   static async getAll() {

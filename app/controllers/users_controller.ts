@@ -5,7 +5,7 @@ export default class UsersController {
   /**
    * Display a list of resource
    */
-  async index({ request, response }: HttpContext) {
+  async index({ response }: HttpContext) {
     const users = await UserService.getAll()
     return response.ok({ data: users })
   }
