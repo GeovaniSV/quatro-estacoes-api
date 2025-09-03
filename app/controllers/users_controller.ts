@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { UserService } from '#services/user_service'
 import { inject } from '@adonisjs/core'
-import { createUserValidator } from '#validators/user'
+import { createUserValidator, updateUserValidator } from '#validators/user_validator'
 
 @inject()
 export default class UsersController {
@@ -11,10 +11,6 @@ export default class UsersController {
   async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createUserValidator)
     const user = await this.userService.create(payload)
-
-    if (user.status === 400) {
-      return response.badRequest({ data: user })
-    }
 
     return response.created({ data: user })
   }
@@ -33,13 +29,14 @@ export default class UsersController {
 
   //update user
   async update({ params, request, response }: HttpContext) {
-    const user = await this.userService.update(params.id, request.body())
+    const payload = await request.validateUsing(createUserValidator)
+    const user = await this.userService.update(params.id, payload)
     return response.ok({ data: user })
   }
 
   //delete user
   async destroy({ params, response }: HttpContext) {
     const user = await this.userService.delete(params.id)
-    return response.ok(user)
+    return response.ok({ Message: 'User deleted', data: user })
   }
 }

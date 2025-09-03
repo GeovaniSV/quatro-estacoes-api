@@ -1,7 +1,7 @@
 import vine from '@vinejs/vine'
 import { cpfRule } from './customRules/cpf_validator.js'
 
-export const createUserValidator = vine.compile(
+const createUserValidator = vine.compile(
   vine.object({
     user_name: vine.string().trim(),
     email: vine.string().trim().email(),
@@ -15,3 +15,18 @@ export const createUserValidator = vine.compile(
     logradouro: vine.string(),
   })
 )
+
+const updateUserValidator = vine.compile(
+  vine.object({
+    user_name: vine.string().trim(),
+    password: vine.string(),
+    fone: vine.string().trim(),
+    cep: vine.string().trim(),
+    estado: vine.string(),
+    cidade: vine.string(),
+    bairro: vine.string(),
+    logradouro: vine.string(),
+  })
+)
+
+export { createUserValidator, updateUserValidator }

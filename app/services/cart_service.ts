@@ -6,7 +6,8 @@ export class CartService {
   }
 
   async create(data: Partial<Cart>) {
-    return await Cart.create(data)
+    const cart = await Cart.create(data)
+    return cart
   }
 
   async update(id: number, data: Partial<Cart>) {

@@ -1,26 +1,18 @@
-import { v4 as uuidv4 } from 'uuid'
+import { v7 as uuidv7 } from 'uuid'
 
 import User from '#models/user'
+import UserAlreadyExistsException from '#exceptions/user_already_exists_exception'
+import NotFoundException from '#exceptions/not_found_exception'
 
 export class UserService {
   async create(data: Partial<User>) {
-    let user = await User.findBy('email', data.email)
+    const hasUser = await User.findBy('email', data.email)
     //tem que tirar os pontos e caracteres especiais do cpf,
-    if (user) {
-      return {
-        status: 400,
-        message: 'User already exists',
-        user,
-      }
-    }
+    if (hasUser) throw new UserAlreadyExistsException()
 
-    user = await User.create(data)
+    const user = await User.create(data)
 
-    return {
-      status: 201,
-      message: 'User created',
-      user,
-    }
+    return user
   }
 
   async getAll() {
@@ -37,16 +29,9 @@ export class UserService {
     if (user) {
       user.merge(data)
       await user.save()
-      return {
-        status: 200,
-        message: 'User updated',
-        user,
-      }
-    }
-
-    return {
-      status: 404,
-      message: 'User not found',
+      return user
+    } else {
+      throw new NotFoundException('User not found')
     }
   }
 
@@ -55,14 +40,9 @@ export class UserService {
 
     if (user) {
       await user.delete()
-      return {
-        status: 200,
-        message: 'User deleted successfuly',
-      }
-    }
-    return {
-      status: 404,
-      message: 'User not found',
+      return user
+    } else {
+      throw new NotFoundException('User not found')
     }
   }
 }
