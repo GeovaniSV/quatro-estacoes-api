@@ -22,6 +22,6 @@ function isValidCPF(cpf: string): boolean {
 
 export const cpfRule = vine.createRule((value, _, field) => {
   if (typeof value !== 'string' || !isValidCPF(value)) {
-    field.report('O campo {{ field }} deve ser um CPF válido', 'cpf', field)
+    field.report('The {{ field }} field must be a valid CPF', 'cpf', field)
   }
 })

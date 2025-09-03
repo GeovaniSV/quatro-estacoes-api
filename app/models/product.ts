@@ -9,9 +9,6 @@ export default class Product extends BaseModel {
   declare product_name: string
 
   @column()
-  declare product_quantity: number
-
-  @column()
   declare product_description: string
 
   @column()

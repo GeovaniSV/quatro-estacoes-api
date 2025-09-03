@@ -10,6 +10,7 @@ export default class UsersController {
   //save user
   async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createUserValidator)
+
     const user = await this.userService.create(payload)
 
     return response.created({ data: user })
@@ -29,7 +30,7 @@ export default class UsersController {
 
   //update user
   async update({ params, request, response }: HttpContext) {
-    const payload = await request.validateUsing(createUserValidator)
+    const payload = await request.validateUsing(updateUserValidator)
     const user = await this.userService.update(params.id, payload)
     return response.ok({ data: user })
   }
