@@ -29,4 +29,11 @@ const updateUserValidator = vine.compile(
   })
 )
 
-export { createUserValidator, updateUserValidator }
+const loginUserValidator = vine.compile(
+  vine.object({
+    email: vine.string().trim().email(),
+    password: vine.string(),
+  })
+)
+
+export { createUserValidator, updateUserValidator, loginUserValidator }

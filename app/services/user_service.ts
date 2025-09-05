@@ -8,7 +8,6 @@ import HTTPNotFoundException from '#exceptions/HTTP_not_found_exception'
 
 //validators
 import { createCartValidator } from '#validators/cart_validator'
-import vine from '@vinejs/vine'
 
 export class UserService {
   async create(data: Partial<User>) {
@@ -30,8 +29,17 @@ export class UserService {
     return user
   }
 
+  async login(data: Partial<User>) {
+    const user = await User.findBy('email', data.email)
+
+    if (!user) throw new HTTPNotFoundException('User not found')
+    return user
+  }
+
   async getAll() {
-    return await User.all()
+    const users = await User.all()
+    if (!users || users.length == 0) throw new HTTPNotFoundException('Users not found')
+    return users
   }
 
   async getById(id: number) {
