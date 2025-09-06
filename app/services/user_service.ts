@@ -3,8 +3,8 @@ import User from '#models/user'
 import Cart from '#models/cart'
 
 //exceptions
-import HTTPAlreadyExistsException from '#exceptions/HTTP_already_exists_exception'
-import HTTPNotFoundException from '#exceptions/HTTP_not_found_exception'
+import { UserNotFoundException } from '#exceptions/not_found_exception/user_not_found_exception'
+import { UserAlreadyExistsException } from '#exceptions/already_exists_exceptions/user_already_exists_exception'
 
 //validators
 import { createCartValidator } from '#validators/cart_validator'
@@ -13,7 +13,7 @@ export class UserService {
   async create(data: Partial<User>) {
     const hasUser = await User.findBy('email', data.email)
 
-    if (hasUser) throw new HTTPAlreadyExistsException('User already exists')
+    if (hasUser) throw new UserAlreadyExistsException()
 
     const user = await User.create(data)
 
@@ -32,13 +32,13 @@ export class UserService {
   async login(data: Partial<User>) {
     const user = await User.findBy('email', data.email)
 
-    if (!user) throw new HTTPNotFoundException('User not found')
+    if (!user) throw new UserNotFoundException()
     return user
   }
 
   async getAll() {
     const users = await User.all()
-    if (!users || users.length == 0) throw new HTTPNotFoundException('Users not found')
+    if (!users || users.length == 0) throw new UserNotFoundException()
     return users
   }
 
@@ -54,7 +54,7 @@ export class UserService {
       await user.save()
       return user
     } else {
-      throw new HTTPNotFoundException('User not found')
+      throw new UserNotFoundException()
     }
   }
 
@@ -65,7 +65,7 @@ export class UserService {
       await user.delete()
       return user
     } else {
-      throw new HTTPNotFoundException('User not found')
+      throw new UserNotFoundException()
     }
   }
 }

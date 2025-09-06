@@ -4,8 +4,8 @@ import Cart from '#models/cart'
 import { createCartValidator } from '#validators/cart_validator'
 
 //Exceptions
-import HTTPNotFoundException from '#exceptions/HTTP_not_found_exception'
-import HTTPAlreadyExistsException from '#exceptions/HTTP_already_exists_exception'
+import HTTPNotFoundException from '#exceptions/http_exceptions/HTTP_not_found_exception'
+import HTTPAlreadyExistsException from '#exceptions/http_exceptions/HTTP_already_exists_exception'
 
 export class CartService {
   async show(user_id: number) {

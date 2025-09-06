@@ -25,7 +25,7 @@ router
     router.delete('/:id', [UsersController, 'destroy'])
 
     router.get('/:id/carts', [CartsController, 'show'])
-    router.get('/:id/carts', [CartsController, 'update'])
+    router.put('/:id/carts', [CartsController, 'update'])
   })
   .prefix('users')
 

@@ -1,12 +1,14 @@
-import HTTPAlreadyExistsException from '#exceptions/HTTP_already_exists_exception'
-import HTTPNotFoundException from '#exceptions/HTTP_not_found_exception'
 import Product from '#models/product'
+
+//Exceptions
+import { ProductAlreadyExistsException } from '#exceptions/already_exists_exceptions/product_already_exists_exception'
+import { ProductNotFoundException } from '#exceptions/not_found_exception/product_not_found_exception'
 
 export class ProductService {
   async create(data: Partial<Product>) {
     const hasProduct = await Product.findBy('product_name', data.product_name)
 
-    if (hasProduct) throw new HTTPAlreadyExistsException('Product already exists')
+    if (hasProduct) throw new ProductAlreadyExistsException()
 
     const product = await Product.create(data)
 
@@ -20,14 +22,14 @@ export class ProductService {
 
   async getById(id: number) {
     const product = await Product.findBy('id', id)
-    if (!product) throw new HTTPNotFoundException('Product not found')
+    if (!product) throw new ProductNotFoundException()
     return product
   }
 
   async update(id: number, data: Partial<Product>) {
     const product = await Product.findBy('id', id)
 
-    if (!product) throw new HTTPNotFoundException('Product not found')
+    if (!product) throw new ProductNotFoundException()
 
     product.merge(data)
     await product.save()
@@ -38,7 +40,7 @@ export class ProductService {
   async delete(id: number) {
     const product = await Product.findBy('id', id)
 
-    if (!product) throw new HTTPNotFoundException('Product not found')
+    if (!product) throw new ProductNotFoundException()
 
     await product.delete()
 
