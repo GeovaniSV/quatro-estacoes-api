@@ -12,7 +12,7 @@ export default class UsersController {
   constructor(protected userService: UserService) {}
 
   //save user
-  async store({ request, response }: HttpContext) {
+  async register({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createUserValidator)
 
     const user = await this.userService.create(payload)

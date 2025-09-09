@@ -9,18 +9,17 @@
 
 import CartsController from '#controllers/carts_controller'
 import router from '@adonisjs/core/services/router'
+import { middleware } from './kernel.js'
 const UsersController = () => import('#controllers/users_controller')
 const ProductsController = () => import('#controllers/products_controller')
 
 router.group(() => {
-  router.post('/register', [UsersController, 'store'])
-  router.post('/login', [UsersController])
+  router.post('/register', [UsersController, 'register'])
+  router.post('/login', [UsersController, 'login'])
 })
 
 router
   .group(() => {
-    router.get('/', [UsersController, 'index'])
-    router.get('/:id', [UsersController, 'show'])
     router.put('/:id', [UsersController, 'update'])
     router.delete('/:id', [UsersController, 'destroy'])
 
@@ -28,6 +27,19 @@ router
     router.put('/:id/carts', [CartsController, 'update'])
   })
   .prefix('users')
+
+//Adm user routes
+router
+  .group(() => {
+    router.get('/', [UsersController, 'index'])
+    router.get('/:id', [UsersController, 'show'])
+  })
+  .prefix('users')
+  .use(
+    middleware.auth({
+      guards: ['api'],
+    })
+  )
 
 router
   .group(() => {

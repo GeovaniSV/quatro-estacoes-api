@@ -1,10 +1,10 @@
-import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
+import type { HasOne } from '@adonisjs/lucid/types/relations'
+import { DateTime } from 'luxon'
 import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
-import type { HasOne } from '@adonisjs/lucid/types/relations'
 
 import Cart from '#models/cart'
 
@@ -52,6 +52,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare logradouro: string
 
+  @column()
+  declare role: 'USER' | 'ADMIN'
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -59,7 +62,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare updatedAt: DateTime | null
 
   static accessTokens = DbAccessTokensProvider.forModel(User, {
-    expiresIn: '7 days',
+    expiresIn: '2 days',
     prefix: 'oat_',
     table: 'auth_access_tokens',
     type: 'auth_token',

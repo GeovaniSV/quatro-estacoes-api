@@ -1,8 +1,8 @@
 import Product from '#models/product'
 
 //Exceptions
-import { ProductAlreadyExistsException } from '#exceptions/already_exists_exceptions/product_already_exists_exception'
-import { ProductNotFoundException } from '#exceptions/not_found_exception/product_not_found_exception'
+import { ProductAlreadyExistsException } from '#exceptions/products_exceptions/product_already_exists_exception'
+import { ProductNotFoundException } from '#exceptions/products_exceptions/product_not_found_exception'
 
 export class ProductService {
   async create(data: Partial<Product>) {

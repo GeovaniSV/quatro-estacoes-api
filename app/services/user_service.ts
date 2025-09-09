@@ -1,10 +1,13 @@
+import hash from '@adonisjs/core/services/hash'
+
 //models
 import User from '#models/user'
 import Cart from '#models/cart'
 
 //exceptions
-import { UserNotFoundException } from '#exceptions/not_found_exception/user_not_found_exception'
-import { UserAlreadyExistsException } from '#exceptions/already_exists_exceptions/user_already_exists_exception'
+import { UserNotFoundException } from '#exceptions/users_exceptions/user_not_found_exception'
+import { UserAlreadyExistsException } from '#exceptions/users_exceptions/user_already_exists_exception'
+import { UserInvalidCredentialsException } from '#exceptions/users_exceptions/user_invalid_credentials_exceptions'
 
 //validators
 import { createCartValidator } from '#validators/cart_validator'
@@ -30,10 +33,22 @@ export class UserService {
   }
 
   async login(data: Partial<User>) {
-    const user = await User.findBy('email', data.email)
+    if (!data.email || !data.password) throw new UserInvalidCredentialsException()
+    const user = await User.verifyCredentials(data.email, data.password)
 
-    if (!user) throw new UserNotFoundException()
-    return user
+    const ability = {
+      role: 'USER',
+    }
+
+    if (user.email == 'maniyt60@gmail.com') {
+      ability.role = 'ADM'
+    }
+
+    const token = await User.accessTokens.create(user, [ability.role])
+
+    return {
+      token,
+    }
   }
 
   async getAll() {
