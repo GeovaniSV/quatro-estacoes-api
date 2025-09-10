@@ -19,7 +19,6 @@ const createUserValidator = vine.compile(
 const updateUserValidator = vine.compile(
   vine.object({
     user_name: vine.string().trim(),
-    password: vine.string(),
     fone: vine.string().trim(),
     cep: vine.string().trim(),
     estado: vine.string(),

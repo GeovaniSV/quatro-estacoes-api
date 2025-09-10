@@ -9,6 +9,7 @@ import { UserInvalidCredentialsException } from '#exceptions/users_exceptions/us
 
 //validators
 import { createCartValidator } from '#validators/cart_validator'
+import db from '@adonisjs/lucid/services/db'
 
 export class UserService {
   async create(data: Partial<User>) {
@@ -43,8 +44,8 @@ export class UserService {
     return token
   }
 
-  async getAll() {
-    const users = await User.all()
+  async getAll(page: number, limit: number) {
+    const users = await db.from('users').paginate(page, limit)
 
     if (!users || users.length == 0) throw new UserNotFoundException()
 
@@ -59,34 +60,24 @@ export class UserService {
     return user
   }
 
-  async showProfile(id: number) {
+  async update(id: number, data: Partial<User>) {
     const user = await User.findBy('id', id)
 
     if (!user) throw new UserNotFoundException()
 
+    user.merge(data)
+    await user.save()
+
     return user
-  }
-
-  async update(id: number, data: Partial<User>) {
-    const user = await User.findBy('id', id)
-
-    if (user) {
-      user.merge(data)
-      await user.save()
-      return user
-    } else {
-      throw new UserNotFoundException()
-    }
   }
 
   async delete(id: number) {
     const user = await User.findBy('id', id)
 
-    if (user) {
-      await user.delete()
-      return user
-    } else {
-      throw new UserNotFoundException()
-    }
+    if (!user) throw new UserNotFoundException()
+
+    await user.delete()
+
+    return user
   }
 }

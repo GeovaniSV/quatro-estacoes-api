@@ -30,29 +30,39 @@ export default class UsersController {
   }
 
   //query all users
-  async index({ response }: HttpContext) {
-    const users = await this.userService.getAll()
-    return response.ok({ data: users })
+  async index({ request, response }: HttpContext) {
+    const page = request.input('page')
+    const limit = request.input('limit')
+    console.log({
+      page,
+      limit,
+    })
+    const data = await this.userService.getAll(page, limit)
+    return response.ok({ data })
   }
 
-  //show unique user
+  //show unique user (admin routes)
   async show({ params, response }: HttpContext) {
     const user = await this.userService.getById(params.id)
     return response.ok({ data: user })
   }
 
+  //Show unique profile user (user routes)
   async showProfile({ auth, response }: HttpContext) {
     const userAuth = auth.user
     if (!userAuth) throw new HTTPUnauthorized('Unauthorized Access')
-    const id = auth.user.id
-    const user = await this.userService.showProfile(id)
+    const id = userAuth.id
+    const user = await this.userService.getById(id)
     return response.ok({ data: user })
   }
 
   //update user
-  async update({ params, request, response }: HttpContext) {
+  async update({ auth, request, response }: HttpContext) {
     const payload = await request.validateUsing(updateUserValidator)
-    const user = await this.userService.update(params.id, payload)
+    const userAuth = auth.user
+    if (!userAuth) throw new HTTPUnauthorized('Unauthorized Access')
+    const id = userAuth.id
+    const user = await this.userService.update(id, payload)
     return response.ok({ data: user })
   }
 
