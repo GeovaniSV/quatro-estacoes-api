@@ -6,6 +6,7 @@ import {
   loginUserValidator,
   updateUserValidator,
 } from '#validators/user_validator'
+import HTTPUnauthorized from '#exceptions/http_exceptions/HTTP_unauthorized_exceptions'
 
 @inject()
 export default class UsersController {
@@ -37,6 +38,14 @@ export default class UsersController {
   //show unique user
   async show({ params, response }: HttpContext) {
     const user = await this.userService.getById(params.id)
+    return response.ok({ data: user })
+  }
+
+  async showProfile({ auth, response }: HttpContext) {
+    const userAuth = auth.user
+    if (!userAuth) throw new HTTPUnauthorized('Unauthorized Access')
+    const id = auth.user.id
+    const user = await this.userService.showProfile(id)
     return response.ok({ data: user })
   }
 

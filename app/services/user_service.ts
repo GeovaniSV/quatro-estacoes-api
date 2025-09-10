@@ -40,19 +40,31 @@ export class UserService {
 
     const token = await User.accessTokens.create(user, [user.role])
 
-    return {
-      token,
-    }
+    return token
   }
 
   async getAll() {
     const users = await User.all()
+
     if (!users || users.length == 0) throw new UserNotFoundException()
+
     return users
   }
 
   async getById(id: number) {
-    return await User.findOrFail(id)
+    const user = await User.findBy('id', id)
+
+    if (!user) throw new UserNotFoundException()
+
+    return user
+  }
+
+  async showProfile(id: number) {
+    const user = await User.findBy('id', id)
+
+    if (!user) throw new UserNotFoundException()
+
+    return user
   }
 
   async update(id: number, data: Partial<User>) {

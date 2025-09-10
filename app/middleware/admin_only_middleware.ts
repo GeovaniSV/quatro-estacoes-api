@@ -9,12 +9,7 @@ export default class AdminOnlyMiddleware {
     /**
      * Middleware logic goes here (before the next call)
      */
-
-    console.log(auth)
-    console.log(auth?.user)
-
     const user = auth.user
-    console.log(user)
 
     if (!user) throw new HTTPUnauthorized('Unauthorized access')
 
