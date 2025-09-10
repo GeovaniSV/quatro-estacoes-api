@@ -10,6 +10,8 @@
 import CartsController from '#controllers/carts_controller'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import auth from '@adonisjs/auth/services/main'
+import AdminOnlyMiddleware from '#middleware/admin_only_middleware'
 const UsersController = () => import('#controllers/users_controller')
 const ProductsController = () => import('#controllers/products_controller')
 
@@ -27,6 +29,11 @@ router
     router.put('/:id/carts', [CartsController, 'update'])
   })
   .prefix('users')
+  .use(
+    middleware.auth({
+      guards: ['api'],
+    })
+  )
 
 //Adm user routes
 router
@@ -35,11 +42,7 @@ router
     router.get('/:id', [UsersController, 'show'])
   })
   .prefix('users')
-  .use(
-    middleware.auth({
-      guards: ['api'],
-    })
-  )
+  .use([middleware.auth({ guards: ['api'] }), middleware.adminOnly()])
 
 router
   .group(() => {
