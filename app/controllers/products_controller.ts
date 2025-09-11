@@ -16,7 +16,7 @@ export default class ProductsController {
     return response.created({ data: product })
   }
 
-  //query all products
+  //query all products by page and limit from query params
   async index({ request, response }: HttpContext) {
     const page = request.input('page')
     const limit = request.input('limit')

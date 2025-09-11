@@ -2,21 +2,30 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { UserService } from '#services/user_service'
 import { inject } from '@adonisjs/core'
 import {
-  createUserValidator,
+  createUserRequestBody,
   loginUserValidator,
   updateUserValidator,
 } from '#validators/user_validator'
 import HTTPUnauthorized from '#exceptions/http_exceptions/HTTP_unauthorized_exceptions'
+import { ProfileService } from '#services/profile_service'
+import { CartService } from '#services/cart_service'
 
 @inject()
 export default class UsersController {
-  constructor(protected userService: UserService) {}
+  constructor(
+    protected userService: UserService,
+    protected profileService: ProfileService,
+    protected cartService: CartService
+  ) {}
 
-  //save user
+  //Register the user
   async register({ request, response }: HttpContext) {
-    const payload = await request.validateUsing(createUserValidator)
+    const requestPayload = await request.validateUsing(createUserRequestBody)
 
-    const user = await this.userService.register(payload)
+    const userRequest = requestPayload.user
+    const profileRequest = requestPayload.profile
+
+    const user = await this.userService.register(userRequest, profileRequest)
 
     return response.created({ data: user })
   }
@@ -29,7 +38,7 @@ export default class UsersController {
     return response.ok({ data: token })
   }
 
-  //query all users
+  //query all users by page and limit from query params
   async index({ request, response }: HttpContext) {
     const page = request.input('page')
     const limit = request.input('limit')
@@ -53,7 +62,8 @@ export default class UsersController {
     if (!userAuth) throw new HTTPUnauthorized('Unauthorized Access')
     const id = userAuth.id
     const user = await this.userService.getById(id)
-    return response.ok({ data: user })
+    const profile = await this.profileService.getById(id)
+    return response.ok({ data: user, profile })
   }
 
   //update user
@@ -68,6 +78,8 @@ export default class UsersController {
 
   //delete user
   async destroy({ params, response }: HttpContext) {
+    await this.profileService.delete(params.id)
+    await this.cartService.delete(params.id)
     const user = await this.userService.delete(params.id)
     return response.ok({ Message: 'User deleted', data: user })
   }

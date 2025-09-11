@@ -11,11 +11,7 @@ export default class extends BaseSchema {
       table.string('password').notNullable()
       table.string('cpf', 14).notNullable()
       table.string('fone', 16).notNullable()
-      table.string('cep', 9).notNullable()
-      table.string('estado')
-      table.string('cidade')
-      table.string('bairro')
-      table.string('logradouro')
+
       table.enum('role', ['USER', 'ADMIN']).defaultTo('USER')
 
       table.timestamp('created_at', { useTz: true }).notNullable()

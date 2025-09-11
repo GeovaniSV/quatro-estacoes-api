@@ -7,6 +7,7 @@ import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 
 import Cart from '#models/cart'
+import Profile from '#models/profile'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -37,20 +38,10 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare fone: string
 
-  @column()
-  declare cep: string
-
-  @column()
-  declare estado: string
-
-  @column()
-  declare cidade: string
-
-  @column()
-  declare bairro: string
-
-  @column()
-  declare logradouro: string
+  @hasOne(() => Profile, {
+    foreignKey: 'user_id',
+  })
+  declare profile: HasOne<typeof Profile>
 
   @column()
   declare role: 'USER' | 'ADMIN'

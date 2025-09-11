@@ -1,6 +1,9 @@
+import db from '@adonisjs/lucid/services/db'
+
 //models
 import User from '#models/user'
 import Cart from '#models/cart'
+import Profile from '#models/profile'
 
 //exceptions
 import { UserNotFoundException } from '#exceptions/users_exceptions/user_not_found_exception'
@@ -9,19 +12,21 @@ import { UserInvalidCredentialsException } from '#exceptions/users_exceptions/us
 
 //validators
 import { createCartValidator } from '#validators/cart_validator'
-import db from '@adonisjs/lucid/services/db'
 
 export class UserService {
-  async register(data: Partial<User>) {
-    const hasUser = await User.findBy('email', data.email)
+  async register(userData: Partial<User>, profileData: Partial<Profile>) {
+    const hasUser = await User.findBy('email', userData.email)
 
     if (hasUser) throw new UserAlreadyExistsException()
 
-    if (data.email == 'maniyt60@gmail.com') {
-      data.role = 'ADMIN'
+    if (userData.email == 'maniyt60@gmail.com') {
+      userData.role = 'ADMIN'
     }
+    const user = await User.create(userData)
 
-    const user = await User.create(data)
+    profileData.user_id = user.id
+
+    const profile = await Profile.create(profileData)
 
     const cartData = {
       user_id: Number(user.id),
@@ -32,7 +37,7 @@ export class UserService {
 
     await Cart.create(cartPayload)
 
-    return user
+    return { user, profile: profile }
   }
 
   async login(data: Partial<User>) {
