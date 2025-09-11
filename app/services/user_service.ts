@@ -12,7 +12,7 @@ import { createCartValidator } from '#validators/cart_validator'
 import db from '@adonisjs/lucid/services/db'
 
 export class UserService {
-  async create(data: Partial<User>) {
+  async register(data: Partial<User>) {
     const hasUser = await User.findBy('email', data.email)
 
     if (hasUser) throw new UserAlreadyExistsException()

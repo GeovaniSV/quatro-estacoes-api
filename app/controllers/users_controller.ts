@@ -16,7 +16,7 @@ export default class UsersController {
   async register({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createUserValidator)
 
-    const user = await this.userService.create(payload)
+    const user = await this.userService.register(payload)
 
     return response.created({ data: user })
   }

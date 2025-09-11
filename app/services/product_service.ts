@@ -1,4 +1,5 @@
 import Product from '#models/product'
+import db from '@adonisjs/lucid/services/db'
 
 //Exceptions
 import { ProductAlreadyExistsException } from '#exceptions/products_exceptions/product_already_exists_exception'
@@ -15,8 +16,10 @@ export class ProductService {
     return product
   }
 
-  async getAll() {
-    const products = await Product.all()
+  async getAll(page: number, limit: number) {
+    const products = await db.from('products').paginate(page, limit)
+    if (!products || products.length === 0) throw new ProductNotFoundException()
+
     return products
   }
 
