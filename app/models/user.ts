@@ -27,11 +27,6 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ serializeAs: null })
   declare password: string
 
-  @hasOne(() => Cart, {
-    foreignKey: 'user_id',
-  })
-  declare cart: HasOne<typeof Cart>
-
   @column()
   declare cpf: string
 
@@ -42,6 +37,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'user_id',
   })
   declare profile: HasOne<typeof Profile>
+
+  @hasOne(() => Cart, {
+    foreignKey: 'user_id',
+  })
+  declare cart: HasOne<typeof Cart>
 
   @column()
   declare role: 'USER' | 'ADMIN'

@@ -1,14 +1,14 @@
 import Item from '#models/item'
 import { DateTime } from 'luxon'
-import type { ManyToMany } from '@adonisjs/lucid/types/relations'
-import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 
 export default class Cart extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @manyToMany(() => Item)
-  declare items: ManyToMany<typeof Item>
+  @hasMany(() => Item)
+  declare items: HasMany<typeof Item>
 
   @column()
   declare user_id: number

@@ -12,6 +12,7 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('products')
         .onDelete('CASCADE')
+      table.integer('cart_id').unsigned().references('carts.id').onDelete('CASCADE')
       table.integer('product_quantity')
       table.string('product_color', 80)
       table.decimal('item_price', 10, 2)

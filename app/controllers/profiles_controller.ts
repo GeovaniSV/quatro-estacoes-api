@@ -1,4 +1,4 @@
-import HTTPUnauthorized from '#exceptions/http_exceptions/HTTP_unauthorized_exceptions'
+import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
 import { ProfileService } from '#services/profile_service'
 import { updateProfileValidator } from '#validators/profile_validator'
 import { inject } from '@adonisjs/core'
@@ -11,7 +11,7 @@ export default class ProfilesController {
   //show profile
   async show({ auth, response }: HttpContext) {
     const userAuth = auth.user
-    if (!userAuth) throw new HTTPUnauthorized('Unauthorized Access')
+    if (!userAuth) throw new UnauthorizedException()
     const id = userAuth.id
     const profile = await this.profileService.getById(id)
     return response.ok({ data: profile })
@@ -21,7 +21,7 @@ export default class ProfilesController {
   async update({ auth, request, response }: HttpContext) {
     const payload = await request.validateUsing(updateProfileValidator)
     const userAuth = auth.user
-    if (!userAuth) throw new HTTPUnauthorized('Unauthorized Access')
+    if (!userAuth) throw new UnauthorizedException()
     const id = userAuth.id
     const profile = await this.profileService.update(id, payload)
     return response.ok({ data: profile })

@@ -4,8 +4,8 @@ import Cart from '#models/cart'
 import { createCartValidator } from '#validators/cart_validator'
 
 //Exceptions
-import HTTPNotFoundException from '#exceptions/http_exceptions/HTTP_not_found_exception'
 import HTTPAlreadyExistsException from '#exceptions/http_exceptions/HTTP_already_exists_exception'
+import { CartNotFoundException } from '#exceptions/carts_exceptions/cart_not_found_exception'
 
 export class CartService {
   async show(user_id: number) {
@@ -37,7 +37,7 @@ export class CartService {
 
   async update(user_id: number, data: Partial<Cart>) {
     const cart = await Cart.findBy('user_id', user_id)
-    if (!cart) throw new HTTPNotFoundException('Cart not found')
+    if (!cart) throw new CartNotFoundException()
 
     cart.merge(data)
     await cart.save()
@@ -48,7 +48,7 @@ export class CartService {
   async delete(user_id: number) {
     const cart = await Cart.findBy('user_id', user_id)
 
-    if (!cart) throw new HTTPNotFoundException('Cart not found')
+    if (!cart) throw new CartNotFoundException()
 
     await cart.delete()
     return { message: 'Cart deleted successfully' }

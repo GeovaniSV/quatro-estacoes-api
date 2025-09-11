@@ -6,9 +6,9 @@ import {
   loginUserValidator,
   updateUserValidator,
 } from '#validators/user_validator'
-import HTTPUnauthorized from '#exceptions/http_exceptions/HTTP_unauthorized_exceptions'
 import { ProfileService } from '#services/profile_service'
 import { CartService } from '#services/cart_service'
+import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
 
 @inject()
 export default class UsersController {
@@ -59,7 +59,7 @@ export default class UsersController {
   //Show unique profile user (user routes)
   async showProfile({ auth, response }: HttpContext) {
     const userAuth = auth.user
-    if (!userAuth) throw new HTTPUnauthorized('Unauthorized Access')
+    if (!userAuth) throw new UnauthorizedException()
     const id = userAuth.id
     const user = await this.userService.getById(id)
     const profile = await this.profileService.getById(id)
@@ -70,7 +70,7 @@ export default class UsersController {
   async update({ auth, request, response }: HttpContext) {
     const payload = await request.validateUsing(updateUserValidator)
     const userAuth = auth.user
-    if (!userAuth) throw new HTTPUnauthorized('Unauthorized Access')
+    if (!userAuth) throw new UnauthorizedException()
     const id = userAuth.id
     const user = await this.userService.update(id, payload)
     return response.ok({ data: user })
