@@ -16,6 +16,9 @@ export default class Product extends BaseModel {
   @column()
   declare product_price: number
 
+  @column()
+  declare price_view: string
+
   @hasMany(() => Item)
   declare items: HasMany<typeof Item>
 

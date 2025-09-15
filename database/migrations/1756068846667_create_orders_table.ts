@@ -7,7 +7,8 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
       table.integer('carts_id').unsigned().references('id').inTable('carts')
-      table.decimal('purchase_price', 10, 2)
+      table.integer('purchase_price')
+      table.string('price_view')
       table.string('payment_method')
 
       table.timestamp('created_at')

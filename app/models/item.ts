@@ -9,10 +9,10 @@ export default class Item extends BaseModel {
   declare id: number
 
   @column()
-  declare product_id: number
+  declare productId: number
 
   @column()
-  declare cart_id: number
+  declare cartId: number
 
   @column()
   declare product_quantity: number
@@ -22,6 +22,9 @@ export default class Item extends BaseModel {
 
   @column()
   declare item_price: number
+
+  @column()
+  declare price_view: string
 
   @belongsTo(() => Product)
   declare product: BelongsTo<typeof Product>

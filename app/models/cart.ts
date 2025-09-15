@@ -16,6 +16,9 @@ export default class Cart extends BaseModel {
   @column()
   declare cart_price: number
 
+  @column()
+  declare price_view: string
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

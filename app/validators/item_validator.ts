@@ -8,4 +8,11 @@ const createItemValidator = vine.compile(
   })
 )
 
-export { createItemValidator }
+const updateItemValidator = vine.compile(
+  vine.object({
+    product_quantity: vine.number().optional(),
+    product_color: vine.string().optional(),
+  })
+)
+
+export { createItemValidator, updateItemValidator }

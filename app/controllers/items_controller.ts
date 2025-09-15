@@ -1,6 +1,6 @@
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
 import { ItemService } from '#services/item_service'
-import { createItemValidator } from '#validators/item_validator'
+import { createItemValidator, updateItemValidator } from '#validators/item_validator'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -26,11 +26,24 @@ export default class ItemsController {
   }
 
   //show unique item
-  async show({ params, response }: HttpContext) {}
+  async show({ params, response }: HttpContext) {
+    const item = await this.itemService.show(params.id)
+
+    return response.ok({ data: item })
+  }
 
   //update item
-  async update({ params, request, response }: HttpContext) {}
+  async update({ params, request, response }: HttpContext) {
+    const payload = await request.validateUsing(updateItemValidator)
+    const item = await this.itemService.update(params.id, payload)
+
+    return response.ok({ data: item })
+  }
 
   //delete item
-  async destroy({ params, response }: HttpContext) {}
+  async destroy({ params, response }: HttpContext) {
+    const item = await this.itemService.delete(params.id)
+
+    response.ok({ data: item })
+  }
 }

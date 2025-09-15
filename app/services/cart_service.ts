@@ -6,12 +6,17 @@ import { createCartValidator } from '#validators/cart_validator'
 //Exceptions
 import HTTPAlreadyExistsException from '#exceptions/http_exceptions/HTTP_already_exists_exception'
 import { CartNotFoundException } from '#exceptions/carts_exceptions/cart_not_found_exception'
+import { inject } from '@adonisjs/core'
+import { MoneyManagement } from '../utils/money.js'
 
+@inject()
 export class CartService {
-  async show(user_id: number) {
-    const hasCart = await Cart.findBy('user_id', user_id)
+  constructor(protected moneyManagement: MoneyManagement) {}
 
-    if (!hasCart) {
+  async show(user_id: number) {
+    const cart = await Cart.findBy('user_id', user_id)
+
+    if (!cart) {
       const cartData = {
         user_id: Number(user_id),
         cart_price: 0.0,
@@ -23,13 +28,27 @@ export class CartService {
       return cart
     }
 
-    return hasCart
+    await cart.load('items')
+
+    const totalValue = this.moneyManagement.calculateCartPrice(cart.items)
+    const priceView = this.moneyManagement.createView(totalValue)
+
+    cart.merge({
+      cart_price: totalValue,
+      price_view: priceView,
+    })
+
+    await cart.save()
+
+    return cart
   }
 
   async create(data: Partial<Cart>) {
     const hasCart = await Cart.findBy('user_id', data.user_id)
 
     if (hasCart) throw new HTTPAlreadyExistsException('Cart already exists')
+
+    data.price_view = this.moneyManagement.createView(0)
 
     const cart = await Cart.create(data)
     return cart
@@ -38,8 +57,17 @@ export class CartService {
   async update(user_id: number, data: Partial<Cart>) {
     const cart = await Cart.findBy('user_id', user_id)
     if (!cart) throw new CartNotFoundException()
+    await cart.load('items')
+
+    const totalValue = this.moneyManagement.calculateCartPrice(cart.items)
+    const priceView = this.moneyManagement.createView(totalValue)
 
     cart.merge(data)
+    cart.merge({
+      cart_price: totalValue,
+      price_view: priceView,
+    })
+
     await cart.save()
 
     return cart

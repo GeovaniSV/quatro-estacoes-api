@@ -26,7 +26,7 @@ export class UserService {
 
     profileData.user_id = user.id
 
-    const profile = await Profile.create(profileData)
+    await Profile.create(profileData)
 
     const cartData = {
       user_id: Number(user.id),
@@ -37,7 +37,10 @@ export class UserService {
 
     await Cart.create(cartPayload)
 
-    return { user, profile: profile }
+    await user.load('profile')
+    await user.load('cart')
+
+    return { user }
   }
 
   async login(data: Partial<User>) {
@@ -61,6 +64,9 @@ export class UserService {
     const user = await User.findBy('id', id)
 
     if (!user) throw new UserNotFoundException()
+
+    await user.load('profile')
+    await user.load('cart')
 
     return user
   }

@@ -15,7 +15,8 @@ export default class extends BaseSchema {
       table.integer('cart_id').unsigned().references('carts.id').onDelete('CASCADE')
       table.integer('product_quantity')
       table.string('product_color', 80)
-      table.decimal('item_price', 10, 2)
+      table.integer('item_price')
+      table.string('price_view')
 
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

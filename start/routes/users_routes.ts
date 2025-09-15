@@ -18,8 +18,8 @@ router
         router.put('/profile', [ProfileController, 'update'])
 
         //Cart routes
-        router.get('/:id/carts', [CartsController, 'show'])
-        router.put('/:id/carts', [CartsController, 'update'])
+        router.get('/carts', [CartsController, 'show'])
+        router.put('/carts', [CartsController, 'update'])
       })
       .prefix('users')
 
@@ -27,7 +27,8 @@ router
     router
       .group(() => {
         router.post('/', [ItemsController, 'store'])
-        router.get('/', [ItemsController, 'index'])
+        router.put('/:id', [ItemsController, 'update'])
+        router.delete('/:id', [ItemsController, 'destroy'])
       })
       .prefix('items')
   })

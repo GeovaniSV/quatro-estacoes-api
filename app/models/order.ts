@@ -16,6 +16,9 @@ export default class Order extends BaseModel {
   @column()
   declare payment_method: number
 
+  @column()
+  declare price_view: string
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
