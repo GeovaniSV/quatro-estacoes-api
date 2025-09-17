@@ -1,6 +1,6 @@
+import Profile from '#models/profile'
 import HTTPBadRequestException from '#exceptions/http_exceptions/http_bad_request_exception'
 import HTTPNotFoundException from '#exceptions/http_exceptions/HTTP_not_found_exception'
-import Profile from '#models/profile'
 
 export class ProfileService {
   async getById(id: number) {

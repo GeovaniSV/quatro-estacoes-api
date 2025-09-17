@@ -3,8 +3,8 @@ import Product from '#models/product'
 import Cart from '#models/cart'
 import Item from '#models/item'
 
-import { inject } from '@adonisjs/core'
 import { MoneyManagement } from '../utils/money.js'
+import { inject } from '@adonisjs/core'
 
 //expcetions
 import { CartNotFoundException } from '#exceptions/carts_exceptions/cart_not_found_exception'

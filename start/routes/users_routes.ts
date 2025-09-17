@@ -15,6 +15,7 @@ router
         router.put('/', [UsersController, 'update'])
 
         //profile routes
+        router.get('/profile', [ProfileController, 'show'])
         router.put('/profile', [ProfileController, 'update'])
 
         //Cart routes

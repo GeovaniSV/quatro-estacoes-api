@@ -18,7 +18,6 @@ export default class UsersController {
     protected cartService: CartService
   ) {}
 
-  //Register the user
   async register({ request, response }: HttpContext) {
     const requestPayload = await request.validateUsing(createUserRequestBody)
 

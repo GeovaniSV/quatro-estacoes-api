@@ -1,11 +1,11 @@
 import Product from '#models/product'
 import db from '@adonisjs/lucid/services/db'
+import { MoneyManagement } from '../utils/money.js'
 import { inject } from '@adonisjs/core'
 
 //Exceptions
 import { ProductAlreadyExistsException } from '#exceptions/products_exceptions/product_already_exists_exception'
 import { ProductNotFoundException } from '#exceptions/products_exceptions/product_not_found_exception'
-import { MoneyManagement } from '../utils/money.js'
 
 @inject()
 export class ProductService {
