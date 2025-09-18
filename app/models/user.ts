@@ -9,6 +9,8 @@ import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import Cart from '#models/cart'
 import Profile from '#models/profile'
 
+import { ApiProperty } from '@foadonis/openapi/decorators'
+
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
   passwordColumnName: 'password',
@@ -18,18 +20,23 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
   declare id: number
 
+  @ApiProperty({ example: 'Geovani Dos Santos Vargas' })
   @column()
   declare user_name: string
 
+  @ApiProperty({ example: 'example@gmail.com' })
   @column()
   declare email: string
 
+  @ApiProperty({ example: 'alo123!.' })
   @column({ serializeAs: null })
   declare password: string
 
+  @ApiProperty({ example: '000.000.000-00' })
   @column()
   declare cpf: string
 
+  @ApiProperty({ example: '(66)99999-9999' })
   @column()
   declare fone: string
 
@@ -43,6 +50,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   })
   declare cart: HasOne<typeof Cart>
 
+  @ApiProperty({ default: 'USER' })
   @column()
   declare role: 'USER' | 'ADMIN'
 

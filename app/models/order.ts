@@ -2,6 +2,7 @@ import Cart from '#models/cart'
 import { DateTime } from 'luxon'
 import type { HasOne } from '@adonisjs/lucid/types/relations'
 import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
+import { ApiProperty } from '@foadonis/openapi/decorators'
 
 export default class Order extends BaseModel {
   @column({ isPrimary: true })
@@ -10,9 +11,11 @@ export default class Order extends BaseModel {
   @hasOne(() => Cart)
   declare cart: HasOne<typeof Cart>
 
+  @ApiProperty({ example: 16400 })
   @column()
   declare purchase_price: number
 
+  @ApiProperty({ example: 'Cartão de Crédito' })
   @column()
   declare payment_method: number
 

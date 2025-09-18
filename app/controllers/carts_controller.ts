@@ -1,8 +1,14 @@
-import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
-import { CartService } from '#services/cart_service'
-import { updateCartValidator } from '#validators/cart_validator'
-import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
+
+//services
+import { CartService } from '#services/cart_service'
+
+//validators
+import { updateCartValidator } from '#validators/cart_validator'
+
+//exceptions
+import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
 
 @inject()
 export default class CartsController {

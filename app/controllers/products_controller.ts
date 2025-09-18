@@ -1,6 +1,10 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { ProductService } from '#services/product_service'
 import { inject } from '@adonisjs/core'
+
+//services
+import { ProductService } from '#services/product_service'
+
+//validator
 import { createProductValidator, updateProductValidator } from '#validators/product_validator'
 
 @inject()

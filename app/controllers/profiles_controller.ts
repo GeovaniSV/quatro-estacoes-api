@@ -1,8 +1,14 @@
-import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
-import { ProfileService } from '#services/profile_service'
-import { updateProfileValidator } from '#validators/profile_validator'
-import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
+
+//services
+import { ProfileService } from '#services/profile_service'
+
+//validators
+import { updateProfileValidator } from '#validators/profile_validator'
+
+//exceptions
+import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
 
 @inject()
 export default class ProfilesController {
