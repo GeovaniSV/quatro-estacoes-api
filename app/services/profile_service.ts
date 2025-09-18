@@ -9,6 +9,7 @@ export class ProfileService {
 
     return profile
   }
+
   async update(id: number, data: Partial<Profile>) {
     data.user_id = id
     const profile = await Profile.findBy('user_id', id)

@@ -9,11 +9,32 @@ import { updateCartValidator } from '#validators/cart_validator'
 
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
+import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import Cart from '#models/cart'
 
 @inject()
 export default class CartsController {
   constructor(protected cartService: CartService) {}
 
+  @ApiOperation({
+    description: 'Retorna o carrinho de compras do usuário cadastrado que fez a requisição',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna o objeto do carrinho de compras do usuário',
+    type: Cart,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized access',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized acces' },
+        code: { type: 'string', example: 'E_UNAUTHORIZED' },
+      },
+    },
+  })
   //show unique cart
   async show({ auth, response }: HttpContext) {
     const user = auth.user
@@ -25,6 +46,37 @@ export default class CartsController {
     return response.ok({ cart })
   }
 
+  @ApiOperation({
+    description:
+      'Realiza a atualização do carrinho de compras do usuário cadastrado que fez a requsição',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna um objeto do carrinho atualizado',
+    type: Cart,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized access',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized acces' },
+        code: { type: 'string', example: 'E_UNAUTHORIZED' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Cart not found',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Cart not found' },
+        code: { type: 'string', example: 'E_NOT_FOUND' },
+      },
+    },
+  })
   //update cart
   async update({ auth, request, response }: HttpContext) {
     const user = auth.user
@@ -37,6 +89,36 @@ export default class CartsController {
     return response.ok({ Message: 'cart updated', data: cart })
   }
 
+  @ApiOperation({
+    description: 'Deleta o carrinho de compras do usuário cadastrado que fez a requisição',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna um objeto do carrinho',
+    type: Cart,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized access',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized acces' },
+        code: { type: 'string', example: 'E_UNAUTHORIZED' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Cart not found',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Cart not found' },
+        code: { type: 'string', example: 'E_NOT_FOUND' },
+      },
+    },
+  })
   //delete cart
   async destroy({ params, response }: HttpContext) {
     const cart = await this.cartService.delete(params.id)

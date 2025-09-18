@@ -19,7 +19,7 @@ export default class Product extends BaseModel {
   @column()
   declare product_description: string
 
-  @ApiProperty({ example: 16400 })
+  @ApiProperty({ example: 15400 })
   @column()
   declare product_price: number
 
