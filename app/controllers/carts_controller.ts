@@ -1,6 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
 
+import Cart from '#models/cart'
+
 //services
 import { CartService } from '#services/cart_service'
 
@@ -10,7 +12,6 @@ import { updateCartValidator } from '#validators/cart_validator'
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
 import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
-import Cart from '#models/cart'
 
 @inject()
 export default class CartsController {

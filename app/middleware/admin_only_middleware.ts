@@ -3,6 +3,7 @@ import type { NextFn } from '@adonisjs/core/types/http'
 
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
+import { ForbiddenException } from '#exceptions/forbidden_exception'
 
 export default class AdminOnlyMiddleware {
   async handle({ auth }: HttpContext, next: NextFn) {
@@ -14,7 +15,7 @@ export default class AdminOnlyMiddleware {
     if (!user) throw new UnauthorizedException()
 
     if (user.role !== 'ADMIN') {
-      throw new UnauthorizedException()
+      throw new ForbiddenException()
     }
 
     /**

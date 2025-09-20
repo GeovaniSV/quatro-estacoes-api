@@ -16,7 +16,7 @@ import {
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
 
-import { ApiOperation, ApiBody, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiOperation, ApiBody, ApiResponse, ApiBearerAuth } from '@foadonis/openapi/decorators'
 import User from '#models/user'
 
 @inject()
@@ -104,7 +104,19 @@ export default class UsersController {
     description:
       'Realiza a listagem de todos os usuários cadastrados no sistema, com paginação. Rota utilizada somente por usuários administradores',
   })
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Retorna uma lista de usuários', type: [User] })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Forbidden' },
+        code: { type: 'string', example: 'E_FORBIDDEN' },
+      },
+    },
+  })
   @ApiResponse({
     status: 404,
     description: 'User not found',
@@ -132,7 +144,19 @@ export default class UsersController {
     description:
       'Realiza a busca por um unico usuário no sistema passando o parâmetro ID para a busca. Rota utilizada somente por usuários administradores',
   })
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Retorna o objeto de um usuário', type: User })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Forbidden' },
+        code: { type: 'string', example: 'E_FORBIDDEN' },
+      },
+    },
+  })
   @ApiResponse({
     status: 404,
     description: 'User not found',
@@ -221,7 +245,19 @@ export default class UsersController {
     description:
       'Realiza a exclusão de um usuário do sistema. Rota utilizada somente por usuários administradores.',
   })
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Retorna o objeto do usuário deletado', type: User })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Forbidden' },
+        code: { type: 'string', example: 'E_FORBIDDEN' },
+      },
+    },
+  })
   @ApiResponse({
     status: 404,
     description: 'User not found',

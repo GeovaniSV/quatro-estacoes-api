@@ -15,6 +15,7 @@ export default class Product extends BaseModel {
   @ApiProperty({
     example:
       'Vaso de cimento com fibra de vidro. Altura: 45 cm; Diâmetro de boca: 35 cm; Diâmetro da base: 22 cm',
+    maxLength: 120,
   })
   @column()
   declare product_description: string
