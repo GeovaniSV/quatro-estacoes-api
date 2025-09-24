@@ -1,3 +1,4 @@
+import ProductImage from './product_image.js'
 import Item from '#models/item'
 import { DateTime } from 'luxon'
 import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
@@ -27,8 +28,14 @@ export default class Product extends BaseModel {
   @column()
   declare price_view: string
 
+  @column()
+  declare imagePublicId: string
+
   @hasMany(() => Item)
   declare items: HasMany<typeof Item>
+
+  @hasMany(() => ProductImage)
+  declare images: HasMany<typeof ProductImage>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

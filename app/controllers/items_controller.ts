@@ -9,7 +9,7 @@ import { createItemValidator, updateItemValidator } from '#validators/item_valid
 
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
-import { ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 import Item from '#models/item'
 
 @inject()
@@ -20,6 +20,7 @@ export default class ItemsController {
     description: 'Realiza o cadastro de um item à um banco de dados e um carrinho',
   })
   @ApiBody({ type: () => createItemValidator })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 201,
     description: 'Retorna um objeto do item cadastrado',
@@ -70,6 +71,7 @@ export default class ItemsController {
   @ApiOperation({
     description: 'Realiza a listagem de itens dentro do carrinho',
   })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna uma lista de itens com base no id do carrinho de compras',

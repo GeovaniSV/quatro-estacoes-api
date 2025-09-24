@@ -23,11 +23,13 @@ export class ProductService {
       price_view: priceView,
     })
 
+    await product.load('images')
+
     return product
   }
 
   async getAll(page: number, limit: number) {
-    const products = await db.from('products').paginate(page, limit)
+    const products = await await db.from('products').paginate(page, limit)
     if (!products || products.length === 0) throw new ProductNotFoundException()
 
     return products
@@ -36,6 +38,9 @@ export class ProductService {
   async getById(id: number) {
     const product = await Product.findBy('id', id)
     if (!product) throw new ProductNotFoundException()
+
+    await product.load('images')
+
     return product
   }
 

@@ -11,7 +11,7 @@ import { updateCartValidator } from '#validators/cart_validator'
 
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
-import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 
 @inject()
 export default class CartsController {
@@ -20,6 +20,7 @@ export default class CartsController {
   @ApiOperation({
     description: 'Retorna o carrinho de compras do usuário cadastrado que fez a requisição',
   })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna o objeto do carrinho de compras do usuário',
@@ -51,6 +52,7 @@ export default class CartsController {
     description:
       'Realiza a atualização do carrinho de compras do usuário cadastrado que fez a requsição',
   })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna um objeto do carrinho atualizado',
@@ -93,6 +95,7 @@ export default class CartsController {
   @ApiOperation({
     description: 'Deleta o carrinho de compras do usuário cadastrado que fez a requisição',
   })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna um objeto do carrinho',

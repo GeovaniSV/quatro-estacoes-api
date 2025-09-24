@@ -12,7 +12,7 @@ import { updateProfileValidator } from '#validators/profile_validator'
 
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
-import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 
 @inject()
 export default class ProfilesController {
@@ -21,6 +21,7 @@ export default class ProfilesController {
   @ApiOperation({
     description: 'Busca e retorna o usuário e seu perfil',
   })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna um objeto do usuário, e do seu perfil',
@@ -60,6 +61,7 @@ export default class ProfilesController {
   @ApiOperation({
     description: 'Atualiza o perfil de um usuário',
   })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna um objeto do usuário, e do seu perfil',

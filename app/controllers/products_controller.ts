@@ -1,17 +1,26 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
 
+//models
+import Product from '#models/product'
+
+//controllers
+import ProductImagesController from './product_images_controller.js'
+
 //services
 import { ProductService } from '#services/product_service'
 
 //validator
 import { createProductValidator, updateProductValidator } from '#validators/product_validator'
-import { ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
-import Product from '#models/product'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import HTTPBadRequestException from '#exceptions/http_exceptions/http_bad_request_exception'
 
 @inject()
 export default class ProductsController {
-  constructor(protected productService: ProductService) {}
+  constructor(
+    protected productService: ProductService,
+    protected productImagesController: ProductImagesController
+  ) {}
 
   @ApiOperation({
     description:
@@ -20,6 +29,7 @@ export default class ProductsController {
   @ApiBody({
     type: () => createProductValidator,
   })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 201,
     description: 'Retorna um objeto do produto cadastrado',
@@ -37,6 +47,17 @@ export default class ProductsController {
     },
   })
   @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Forbidden' },
+        code: { type: 'string', example: 'E_FORBIDDEN' },
+      },
+    },
+  })
+  @ApiResponse({
     status: 409,
     description: 'Product already exists',
     schema: {
@@ -49,9 +70,14 @@ export default class ProductsController {
   })
   //create new product
   async store({ request, response }: HttpContext) {
+    const mainImage = request.file('mainImage')
+    if (!mainImage) throw new HTTPBadRequestException('Main image should be defined')
+    const additionalImages = request.files('images')
     const payload = await request.validateUsing(createProductValidator)
 
     const product = await this.productService.create(payload)
+
+    await this.productImagesController.uploadImage(product.id, mainImage, additionalImages)
 
     return response.created({ data: product })
   }
@@ -64,6 +90,17 @@ export default class ProductsController {
     status: 200,
     description: 'Retorna uma lista de objetos',
     type: [Product],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Product not found',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Product not found' },
+        code: { type: 'string', example: 'E_NOT_FOUND' },
+      },
+    },
   })
   //query all products by page and limit from query params
   async index({ request, response }: HttpContext) {
@@ -106,10 +143,33 @@ export default class ProductsController {
   @ApiBody({
     type: () => updateProductValidator,
   })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna um objeto do produto alterado',
     type: Product,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized acces',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized acces' },
+        code: { type: 'string', example: 'E_UNAUTHORIZED' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Forbidden' },
+        code: { type: 'string', example: 'E_FORBIDDEN' },
+      },
+    },
   })
   @ApiResponse({
     status: 404,
@@ -133,10 +193,33 @@ export default class ProductsController {
     description:
       'Deleta um produto específico do banco de dados com base no seu ID. Somente usuários administradores podem utilizar essa rota',
   })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna um objeto do produto deletado',
     type: Product,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized acces',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized acces' },
+        code: { type: 'string', example: 'E_UNAUTHORIZED' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Forbidden' },
+        code: { type: 'string', example: 'E_FORBIDDEN' },
+      },
+    },
   })
   @ApiResponse({
     status: 404,
