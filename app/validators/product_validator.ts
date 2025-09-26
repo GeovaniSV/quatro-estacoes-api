@@ -8,6 +8,19 @@ const createProductValidator = vine.compile(
   })
 )
 
+const uploadImageValidator = vine.compile(
+  vine.object({
+    mainImage: vine.file(),
+    images: vine
+      .array(
+        vine.file({
+          extnames: ['png', 'jpg', 'jpeg'],
+        })
+      )
+      .optional(),
+  })
+)
+
 const updateProductValidator = vine.compile(
   vine.object({
     product_name: vine.string().optional(),
@@ -16,4 +29,28 @@ const updateProductValidator = vine.compile(
   })
 )
 
-export { createProductValidator, updateProductValidator }
+const openApiCreateProductValidator = vine.compile(
+  vine.object({
+    product_name: vine.string(),
+    product_description: vine.string().maxLength(120),
+    product_price: vine.number(),
+
+    mainImage: vine.file({
+      extnames: ['png', 'jpg', 'jpeg'],
+    }),
+    images: vine
+      .array(
+        vine.file({
+          extnames: ['png', 'jpg', 'jpeg'],
+        })
+      )
+      .optional(),
+  })
+)
+
+export {
+  createProductValidator,
+  updateProductValidator,
+  uploadImageValidator,
+  openApiCreateProductValidator,
+}

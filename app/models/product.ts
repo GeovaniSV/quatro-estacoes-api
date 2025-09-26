@@ -6,6 +6,7 @@ import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { ApiProperty } from '@foadonis/openapi/decorators'
 
 export default class Product extends BaseModel {
+  @ApiProperty()
   @column({ isPrimary: true })
   declare id: number
 
@@ -28,6 +29,7 @@ export default class Product extends BaseModel {
   @column()
   declare price_view: string
 
+  @ApiProperty({ example: 'products/Estilo_n_1/product_1_1758912772479' })
   @column()
   declare imagePublicId: string
 

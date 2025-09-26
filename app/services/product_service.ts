@@ -23,8 +23,6 @@ export class ProductService {
       price_view: priceView,
     })
 
-    await product.load('images')
-
     return product
   }
 

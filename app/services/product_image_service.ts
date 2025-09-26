@@ -44,6 +44,7 @@ export class ProductImageService {
 
     console.log(productNameReplaced)
 
+    await product.save!()
     return product
   }
 
@@ -91,8 +92,8 @@ export class ProductImageService {
       }
     }
     console.log(productNameReplaced)
-    await product.save!()
 
+    await product.save!()
     return product
   }
 
@@ -105,11 +106,12 @@ export class ProductImageService {
 
     if (image.cloudinaryPublicId === product.imagePublicId) {
       product.imagePublicId = ''
-      await product.save()
     }
 
     await cloudinary.uploader.destroy(image.cloudinaryPublicId)
     await image.delete()
-    return { message: 'Deleted' }
+    await product.save()
+    await product.load('images')
+    return { message: product }
   }
 }
