@@ -71,8 +71,13 @@ export default class ProductsController {
   //create new product
   async store({ request, response }: HttpContext) {
     const mainImage = request.file('mainImage')
+
     if (!mainImage) throw new HTTPBadRequestException('Main image should be defined')
-    const additionalImages = request.files('images')
+    const additionalImages = request.files('images', {
+      size: '4mb',
+      extnames: ['jpg', 'jpeg', 'png'],
+    })
+
     const payload = await request.validateUsing(createProductValidator)
 
     const product = await this.productService.create(payload)
@@ -236,5 +241,10 @@ export default class ProductsController {
   async destroy({ params, response }: HttpContext) {
     const product = await this.productService.delete(params.id)
     return response.ok({ Message: 'Product deleted', data: product })
+  }
+
+  async destroyImage({ params, response }: HttpContext) {
+    const images = await this.productImagesController.deleteProductImage(params.id, params.imageId)
+    return response.ok({ data: images })
   }
 }
