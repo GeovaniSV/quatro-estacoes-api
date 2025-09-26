@@ -12,7 +12,7 @@ import { updateProfileValidator } from '#validators/profile_validator'
 
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiOperation, ApiResponse, ApiBearerAuth } from '@foadonis/openapi/decorators'
 
 @inject()
 export default class ProfilesController {
