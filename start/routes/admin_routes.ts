@@ -22,7 +22,7 @@ router
           router.post('/', [ProductsController, 'store'])
           router.put('/:id', [ProductsController, 'update'])
           router.delete('/:id', [ProductsController, 'destroy'])
-          router.delete('/:id/:imageId', [ProductsController, 'destroyImage'])
+          router.delete('/:id/:imageId', [ProductsController, 'destroyProductImage'])
         })
         .prefix('products')
     })

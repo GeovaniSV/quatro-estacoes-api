@@ -4,9 +4,6 @@ import { inject } from '@adonisjs/core'
 //models
 import Product from '#models/product'
 
-//controllers
-import ProductImagesController from './product_images_controller.js'
-
 //services
 import { ProductService } from '#services/product_service'
 
@@ -14,12 +11,13 @@ import { ProductService } from '#services/product_service'
 import { createProductValidator, updateProductValidator } from '#validators/product_validator'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 import HTTPBadRequestException from '#exceptions/http_exceptions/http_bad_request_exception'
+import { ProductImageService } from '#services/product_image_service'
 
 @inject()
 export default class ProductsController {
   constructor(
     protected productService: ProductService,
-    protected productImagesController: ProductImagesController
+    protected productImageService: ProductImageService
   ) {}
 
   @ApiOperation({
@@ -81,8 +79,10 @@ export default class ProductsController {
     const payload = await request.validateUsing(createProductValidator)
 
     const product = await this.productService.create(payload)
-
-    await this.productImagesController.uploadImage(product.id, mainImage, additionalImages)
+    await product.load('images')
+    await this.productImageService.uploadProductImage(mainImage, product)
+    await this.productImageService.uploadMultipleImages(additionalImages, product)
+    await product.save()
 
     return response.created({ data: product })
   }
@@ -243,8 +243,9 @@ export default class ProductsController {
     return response.ok({ Message: 'Product deleted', data: product })
   }
 
-  async destroyImage({ params, response }: HttpContext) {
-    const images = await this.productImagesController.deleteProductImage(params.id, params.imageId)
-    return response.ok({ data: images })
+  async destroyProductImage({ params, response }: HttpContext) {
+    const { id, imageId } = params
+    const result = await this.productImageService.deleteImage(id, imageId)
+    return response.ok({ data: result })
   }
 }
