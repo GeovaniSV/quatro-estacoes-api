@@ -19,7 +19,7 @@ export class ProductImageService {
   async uploadProductImage(mainImage: MultipartFile, product: Partial<Product>) {
     if (!product) throw new ProductNotFoundException()
     let productNameReplaced = product
-      .product_name!.replace(/\s+/g, '_')
+      .productName!.replace(/\s+/g, '_')
       .replace(/n°\s*(\d+)/gi, 'n_$1')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -50,7 +50,7 @@ export class ProductImageService {
 
   async uploadMultipleImages(additionalImages: MultipartFile[], product: Partial<Product>) {
     let productNameReplaced = product
-      .product_name!.replace(/\s+/g, '_')
+      .productName!.replace(/\s+/g, '_')
       .replace(/n°\s*(\d+)/gi, 'n_$1')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')

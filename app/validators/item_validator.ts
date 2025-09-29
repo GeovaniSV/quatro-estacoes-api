@@ -2,16 +2,16 @@ import vine from '@vinejs/vine'
 
 const createItemValidator = vine.compile(
   vine.object({
-    product_id: vine.number(),
-    product_quantity: vine.number(),
-    product_color: vine.string(),
+    productId: vine.number(),
+    productQuantity: vine.number(),
+    productColor: vine.string(),
   })
 )
 
 const updateItemValidator = vine.compile(
   vine.object({
-    product_quantity: vine.number().optional(),
-    product_color: vine.string().optional(),
+    productQuantity: vine.number().optional(),
+    productColor: vine.string().optional(),
   })
 )
 

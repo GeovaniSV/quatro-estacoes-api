@@ -12,15 +12,15 @@ export class ProductService {
   constructor(protected moneyManagement: MoneyManagement) {}
 
   async create(data: Partial<Product>) {
-    const hasProduct = await Product.findBy('product_name', data.product_name)
+    const hasProduct = await Product.findBy('productName', data.productName)
 
     if (hasProduct) throw new ProductAlreadyExistsException()
 
     const product = await Product.create(data)
 
-    const priceView = this.moneyManagement.createView(product.product_price)
+    const priceView = this.moneyManagement.createView(product.productPrice)
     product.merge({
-      price_view: priceView,
+      priceView: priceView,
     })
 
     return product
@@ -47,8 +47,8 @@ export class ProductService {
 
     if (!product) throw new ProductNotFoundException()
 
-    const priceView = this.moneyManagement.createView(product.product_price)
-    data.price_view = priceView
+    const priceView = this.moneyManagement.createView(product.productPrice)
+    data.priceView = priceView
 
     product.merge(data)
     await product.save()

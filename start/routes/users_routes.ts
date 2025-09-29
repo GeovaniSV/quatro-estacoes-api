@@ -5,6 +5,7 @@ const UsersController = () => import('#controllers/users_controller')
 const ProfileController = () => import('#controllers/profiles_controller')
 const CartsController = () => import('#controllers/carts_controller')
 const ItemsController = () => import('#controllers/items_controller')
+const OrdersController = () => import('#controllers/orders_controller')
 
 router
   .group(() => {
@@ -32,6 +33,13 @@ router
         router.delete('/:id', [ItemsController, 'destroy'])
       })
       .prefix('items')
+
+    //Orders routes
+    router
+      .group(() => {
+        router.post('/', [OrdersController, 'store'])
+      })
+      .prefix('orders')
   })
   .use(
     middleware.auth({

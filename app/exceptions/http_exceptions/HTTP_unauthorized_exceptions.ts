@@ -1,7 +1,7 @@
 import { Exception } from '@adonisjs/core/exceptions'
 import { HttpContext } from '@adonisjs/core/http'
 
-export default class HTTPUnauthorized extends Exception {
+export default class HTTPUnauthorizedException extends Exception {
   static status = 401
   static code = 'E_UNAUTHORIZED'
 

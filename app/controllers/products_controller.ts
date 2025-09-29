@@ -85,20 +85,20 @@ export default class ProductsController {
   })
   //create new product
   async store({ request, response }: HttpContext) {
-    const { mainImage, images } = await request.validateUsing(uploadImageValidator)
+    // const { mainImage, images } = await request.validateUsing(uploadImageValidator)
     const payload = await request.validateUsing(createProductValidator)
 
-    if (!mainImage) throw new HTTPBadRequestException('Main image should be defined')
+    // if (!mainImage) throw new HTTPBadRequestException('Main image should be defined')
 
     const product = await this.productService.create(payload)
 
-    await this.productImageService.uploadProductImage(mainImage, product)
-    if (images) {
-      await this.productImageService.uploadMultipleImages(images, product)
-    }
-    await product.save()
+    // await this.productImageService.uploadProductImage(mainImage, product)
+    // if (images) {
+    //   await this.productImageService.uploadMultipleImages(images, product)
+    // }
+    // await product.save()
 
-    await product.load('images')
+    // await product.load('images')
     return response.created({ data: product })
   }
 

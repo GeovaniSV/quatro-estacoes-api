@@ -59,6 +59,7 @@
     "@vinejs/vine": "^3.0.1",
     "cloudinary": "^2.7.0",
     "luxon": "^3.7.1",
+    "mercadopago": "^2.9.0",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
     "swagger-ui": "^5.29.0",

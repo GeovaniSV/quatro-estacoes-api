@@ -9,6 +9,7 @@ import Profile from '#models/profile'
 import { UserNotFoundException } from '#exceptions/users_exceptions/user_not_found_exception'
 import { UserAlreadyExistsException } from '#exceptions/users_exceptions/user_already_exists_exception'
 import { UserInvalidCredentialsException } from '#exceptions/users_exceptions/user_invalid_credentials_exceptions'
+import { InternalErrorException } from '#exceptions/internal_error_exception'
 
 //validators
 import { createCartValidator } from '#validators/cart_validator'
@@ -30,12 +31,16 @@ export class UserService {
 
     const cartData = {
       user_id: Number(user.id),
-      cart_price: 0.0,
+      cartPrice: 0.0,
     }
 
     const cartPayload = await createCartValidator.validate(cartData)
 
-    await Cart.create(cartPayload)
+    const cart = await Cart.create(cartPayload)
+    if (!cart) {
+      user.delete()
+      throw new InternalErrorException()
+    }
 
     await user.load('profile')
     await user.load('cart')

@@ -22,7 +22,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @ApiProperty({ example: 'Geovani Dos Santos Vargas' })
   @column()
-  declare user_name: string
+  declare userName: string
 
   @ApiProperty({ example: 'example@gmail.com' })
   @column()

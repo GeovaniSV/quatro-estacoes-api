@@ -132,10 +132,7 @@ export default class UsersController {
   async index({ request, response }: HttpContext) {
     const page = request.input('page')
     const limit = request.input('limit')
-    console.log({
-      page,
-      limit,
-    })
+
     const data = await this.userService.getAll(page, limit)
     return response.ok({ data })
   }

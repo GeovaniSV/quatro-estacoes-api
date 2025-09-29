@@ -12,7 +12,7 @@ export default class Product extends BaseModel {
 
   @ApiProperty({ example: 'Estilo n°1' })
   @column()
-  declare product_name: string
+  declare productName: string
 
   @ApiProperty({
     example:
@@ -20,14 +20,14 @@ export default class Product extends BaseModel {
     maxLength: 120,
   })
   @column()
-  declare product_description: string
+  declare productDescription: string
 
   @ApiProperty({ example: 15400 })
   @column()
-  declare product_price: number
+  declare productPrice: number
 
   @column()
-  declare price_view: string
+  declare priceView: string
 
   @ApiProperty({ example: 'products/Estilo_n_1/product_1_1758912772479' })
   @column()

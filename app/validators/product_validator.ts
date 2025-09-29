@@ -2,9 +2,9 @@ import vine from '@vinejs/vine'
 
 const createProductValidator = vine.compile(
   vine.object({
-    product_name: vine.string(),
-    product_description: vine.string().maxLength(120),
-    product_price: vine.number(),
+    productName: vine.string(),
+    productDescription: vine.string().maxLength(120),
+    productPrice: vine.number(),
   })
 )
 
@@ -23,17 +23,17 @@ const uploadImageValidator = vine.compile(
 
 const updateProductValidator = vine.compile(
   vine.object({
-    product_name: vine.string().optional(),
-    product_description: vine.string().maxLength(120).optional(),
-    product_price: vine.number().optional(),
+    productName: vine.string().optional(),
+    productDescription: vine.string().maxLength(120).optional(),
+    productPrice: vine.number().optional(),
   })
 )
 
 const openApiCreateProductValidator = vine.compile(
   vine.object({
-    product_name: vine.string(),
-    product_description: vine.string().maxLength(120),
-    product_price: vine.number(),
+    productName: vine.string(),
+    productDescription: vine.string().maxLength(120),
+    productPrice: vine.number(),
 
     mainImage: vine.file({
       extnames: ['png', 'jpg', 'jpeg'],

@@ -4,7 +4,7 @@ import { cpfRule } from './customRules/cpf_validator.js'
 const createUserRequestBody = vine.compile(
   vine.object({
     user: vine.object({
-      user_name: vine.string().trim(),
+      userName: vine.string().trim(),
       email: vine.string().trim().email(),
       password: vine.string(),
       cpf: vine.string().trim().use(cpfRule()),
@@ -22,7 +22,7 @@ const createUserRequestBody = vine.compile(
 
 const updateUserValidator = vine.compile(
   vine.object({
-    user_name: vine.string().trim(),
+    userName: vine.string().trim(),
     fone: vine.string().trim(),
   })
 )

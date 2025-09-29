@@ -51,11 +51,14 @@ export default class ProfilesController {
   })
   //show profile
   async show({ auth, response }: HttpContext) {
-    const userAuth = auth.user
-    if (!userAuth) throw new UnauthorizedException()
-    const id = userAuth.id
+    const user = auth.user
+    if (!user) throw new UnauthorizedException()
+    const id = user.id
     const profile = await this.profileService.getById(id)
-    return response.ok({ data: profile })
+
+    await user.load('cart')
+
+    return response.ok({ data: { user, profile } })
   }
 
   @ApiOperation({

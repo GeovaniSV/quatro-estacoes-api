@@ -17,10 +17,10 @@ export default class Cart extends BaseModel {
 
   @ApiProperty({ example: 246000 })
   @column()
-  declare cart_price: number
+  declare cartPrice: number
 
   @column()
-  declare price_view: string
+  declare priceView: string
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

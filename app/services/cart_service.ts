@@ -19,7 +19,7 @@ export class CartService {
     if (!cart) {
       const cartData = {
         user_id: Number(user_id),
-        cart_price: 0.0,
+        cartPrice: 0.0,
       }
 
       const cartPayload = await createCartValidator.validate(cartData)
@@ -34,9 +34,13 @@ export class CartService {
     const priceView = this.moneyManagement.createView(totalValue)
 
     cart.merge({
-      cart_price: totalValue,
-      price_view: priceView,
+      cartPrice: totalValue,
+      priceView: priceView,
     })
+
+    for (let i = 0; i < cart.items.length; i++) {
+      await cart.items[i].load('product')
+    }
 
     await cart.save()
 
@@ -48,7 +52,7 @@ export class CartService {
 
     if (hasCart) throw new HTTPAlreadyExistsException('Cart already exists')
 
-    data.price_view = this.moneyManagement.createView(0)
+    data.priceView = this.moneyManagement.createView(0)
 
     const cart = await Cart.create(data)
     return cart
@@ -64,8 +68,8 @@ export class CartService {
 
     cart.merge(data)
     cart.merge({
-      cart_price: totalValue,
-      price_view: priceView,
+      cartPrice: totalValue,
+      priceView: priceView,
     })
 
     await cart.save()

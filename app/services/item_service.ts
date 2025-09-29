@@ -23,18 +23,18 @@ export class ItemService {
     const cart = await Cart.findBy('user_id', user.id)
     if (!cart) throw new CartNotFoundException()
 
-    if (!payload.product_quantity) {
-      throw new HTTPBadRequestException('product_quantity field must be defined')
+    if (!payload.productQuantity) {
+      throw new HTTPBadRequestException('productQuantity field must be defined')
     }
 
     payload.cartId = cart.id
 
-    const product_price = Number(product.product_price)
+    const product_price = Number(product.productPrice)
 
     let items_price: number
 
-    if (payload.product_quantity > 1) {
-      items_price = this.moneyManagement.multiply(product_price, payload.product_quantity)
+    if (payload.productQuantity > 1) {
+      items_price = this.moneyManagement.multiply(product_price, payload.productQuantity)
     } else {
       items_price = product_price
     }
@@ -44,10 +44,10 @@ export class ItemService {
     const item = await Item.create({
       cartId: payload.cartId,
       productId: payload.productId,
-      product_color: payload.product_color,
-      product_quantity: payload.product_quantity,
-      item_price: items_price,
-      price_view: priceView,
+      productColor: payload.productColor,
+      productQuantity: payload.productQuantity,
+      itemPrice: items_price,
+      priceView: priceView,
     })
 
     return item
@@ -74,13 +74,13 @@ export class ItemService {
     if (!item) throw new ItemNotFoundException()
     await item.load('product')
 
-    const product_price = item.product.product_price
+    const product_price = item.product.productPrice
 
     let items_price: number
-    if (data.product_quantity) {
-      items_price = this.moneyManagement.multiply(product_price, data.product_quantity)
-      data.item_price = items_price
-      data.price_view = this.moneyManagement.createView(items_price)
+    if (data.productQuantity) {
+      items_price = this.moneyManagement.multiply(product_price, data.productQuantity)
+      data.itemPrice = items_price
+      data.priceView = this.moneyManagement.createView(items_price)
     }
 
     item.merge(data)

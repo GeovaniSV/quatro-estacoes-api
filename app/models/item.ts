@@ -19,18 +19,18 @@ export default class Item extends BaseModel {
 
   @ApiProperty({ example: 15 })
   @column()
-  declare product_quantity: number
+  declare productQuantity: number
 
   @ApiProperty({ example: 'Vermelho esfumaçado' })
   @column()
-  declare product_color: string
+  declare productColor: string
 
   @ApiProperty({ example: 246000 })
   @column()
-  declare item_price: number
+  declare itemPrice: number
 
   @column()
-  declare price_view: string
+  declare priceView: string
 
   @belongsTo(() => Product)
   declare product: BelongsTo<typeof Product>
