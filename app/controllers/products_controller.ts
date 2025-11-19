@@ -1,22 +1,20 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 
 //models
 import Product from '#models/product'
 
 //services
 import { ProductService } from '#services/product_service'
+import { ProductImageService } from '#services/product_image_service'
 
 //validator
 import {
   createProductValidator,
   openApiCreateProductValidator,
   updateProductValidator,
-  uploadImageValidator,
 } from '#validators/product_validator'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
-import HTTPBadRequestException from '#exceptions/http_exceptions/http_bad_request_exception'
-import { ProductImageService } from '#services/product_image_service'
 
 @inject()
 export default class ProductsController {

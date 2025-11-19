@@ -5,7 +5,8 @@ const UsersController = () => import('#controllers/users_controller')
 const ProfileController = () => import('#controllers/profiles_controller')
 const CartsController = () => import('#controllers/carts_controller')
 const ItemsController = () => import('#controllers/items_controller')
-const OrdersController = () => import('#controllers/orders_controller')
+// const OrdersController = () => import('#controllers/orders_controller')
+const StripeWebHooksController = () => import('#controllers/stripe_web_hooks_controller')
 
 router
   .group(() => {
@@ -35,11 +36,7 @@ router
       .prefix('items')
 
     //Orders routes
-    router
-      .group(() => {
-        router.post('/', [OrdersController, 'store'])
-      })
-      .prefix('orders')
+    router.post('/stripe/checkout', [StripeWebHooksController, 'stripeCheckout'])
   })
   .use(
     middleware.auth({
