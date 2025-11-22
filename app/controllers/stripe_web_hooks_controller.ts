@@ -31,36 +31,16 @@ export default class StripeWebHooksController {
       try {
         event = stripe.webhooks.constructEvent(rawBody!, signature!, endpointSecret)
       } catch (err) {
-        console.log(`⚠️  Webhook signature verification failed.`, err.message)
+        console.log(`Webhook signature verification failed.`, err.message)
         return response.badRequest
       }
     }
 
-    console.log('event: ', event?.type)
     switch (event!.type) {
-      case 'payment_intent.created':
-        const paymentIntentCreated: Stripe.PaymentIntentCreatedEvent = event
-        console.log('Payment_Intent created: ', paymentIntentCreated)
-        break
-
-      case 'payment_intent.succeeded':
-        const paymentIntentSucced: Stripe.PaymentIntentSucceededEvent = event
-        console.log(`PaymentIntent for ${paymentIntentSucced} was successful!`)
-        break
-
-      case 'payment_intent.payment_failed':
-        const paymentIntentPaymentFailed: Stripe.PaymentIntentPaymentFailedEvent = event
-        console.log(`PaymentIntent for ${paymentIntentPaymentFailed} was successful!`)
-        break
-
-      case 'payment_intent.canceled':
-        const paymentIntentCanceled: Stripe.PaymentIntentCanceledEvent = event
-        console.log(`Paymente intent canceled event: ${paymentIntentCanceled}`)
-        break
-
       case 'checkout.session.completed':
-        const checkoutSessionComplete: Stripe.CheckoutSessionCompletedEvent = event
-        console.log(`Checkout session complete event: ${checkoutSessionComplete}`)
+        const paymentEvent: Stripe.CheckoutSessionCompletedEvent = event
+        console.log(paymentEvent.request?.idempotency_key)
+        await this.stripeWebHookService.handleStripeWebHookGenericEvent(paymentEvent)
         break
 
       case 'checkout.session.expired':
@@ -74,5 +54,10 @@ export default class StripeWebHooksController {
     }
 
     return response.ok({})
+  }
+
+  async getAllPayments({ response }: HttpContext) {
+    const payment: any = await this.stripeWebHookService.getAllPayment(1, 1)
+    return response.ok({ payment: payment })
   }
 }

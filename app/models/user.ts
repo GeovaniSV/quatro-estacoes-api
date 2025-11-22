@@ -1,8 +1,8 @@
 import hash from '@adonisjs/core/services/hash'
-import type { HasOne } from '@adonisjs/lucid/types/relations'
+import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 
@@ -10,6 +10,7 @@ import Cart from '#models/cart'
 import Profile from '#models/profile'
 
 import { ApiProperty } from '@foadonis/openapi/decorators'
+import PaymentIntent from './payment_intent.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -49,6 +50,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'user_id',
   })
   declare cart: HasOne<typeof Cart>
+
+  @hasMany(() => PaymentIntent)
+  declare paymentIntent: HasMany<typeof PaymentIntent>
 
   @ApiProperty({ default: 'USER' })
   @column()
