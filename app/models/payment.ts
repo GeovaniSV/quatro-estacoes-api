@@ -5,7 +5,13 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
 export default class Payment extends BaseModel {
   @column({ isPrimary: true })
-  declare id: string
+  declare id: number
+
+  @column()
+  declare stripeCheckoutSessionId: string
+
+  @column()
+  declare stripePaymentIntentId: string
 
   @column()
   declare amount: number
@@ -15,9 +21,6 @@ export default class Payment extends BaseModel {
 
   @column()
   declare currency: string
-
-  @column()
-  declare idempotencyKey: string
 
   @column()
   declare status: string

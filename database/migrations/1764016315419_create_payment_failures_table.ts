@@ -1,19 +1,19 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'payments'
+  protected tableName = 'payment_failures'
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
+      table.string('stripe_payment_id')
       table.string('stripe_checkout_session_id')
-      table.string('stripe_payment_intent_id')
-      table.integer('amount')
-      table.string('payment_method')
-      table.string('currency', 3)
-      table.string('status')
+      table.string('failure_code')
+      table.string('failure_message')
+      table.string('decline_code')
+      table.string('stripe_error_type')
 
-      table.integer('user_id').references('users.id').onDelete('CASCADE')
+      table.integer('payment_id').references('payments.id').onDelete('CASCADE')
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

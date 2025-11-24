@@ -9,6 +9,7 @@ import { addMinutes } from 'date-fns'
 //exceptions
 import { ItemNotFoundException } from '#exceptions/items_exceptions/item_not_found_exception'
 import HTTPAlreadyExistsException from '#exceptions/http_exceptions/HTTP_already_exists_exception'
+import PaymentFailure from '#models/payment_failure'
 
 const STRIPE_API_SECRET_KEY = env.get('STRIPE_API_SECRET_KEY')!
 
@@ -108,7 +109,7 @@ export class StripeWebHookService {
     }
 
     await Payment.create({
-      id: checkoutLogObject.id,
+      stripeCheckoutSessionId: checkoutLogObject.id,
       amount: checkoutLogObject.amount!,
       currency: checkoutLogObject.currency!,
       paymentMethod: checkoutLogObject.payment_method!,
@@ -169,7 +170,7 @@ export class StripeWebHookService {
         sessionObjectSolved.userId = Number(cs.metadata!.userId.toString())
       })
       await Payment.create({
-        id: sessionObjectSolved.id,
+        stripeCheckoutSessionId: sessionObjectSolved.id,
         amount: sessionObjectSolved.amount,
         currency: sessionObjectSolved.currency,
         paymentMethod: sessionObjectSolved.payment_method,
@@ -183,36 +184,53 @@ export class StripeWebHookService {
 
   async handlePaymentIntentPaymentFailed(payload: Stripe.PaymentIntent) {
     console.log(payload.status)
-    // const session = await this.stripe.checkout.sessions.list({
-    //   limit: 1,
-    //   payment_intent: payload.id,
-    // })
+    const lastError = payload.last_payment_error
 
-    // const sessionId = session.data.map((cs) => {
-    //   return cs.id
-    // })
-    // console.log('payment succeeded', payload.status)
-    // console.log('Session id', sessionId.toString())
+    const sessions = await this.stripe.checkout.sessions.list({
+      limit: 1,
+      payment_intent: payload.id,
+    })
 
-    // const payment = await Payment.findBy('id', sessionId.toString())
+    const session = sessions.data[0]
 
-    // console.log('Banco de dados', payment)
+    let paymentMethodType = null
+    if (payload.payment_method) {
+      const paymentMethod = await this.stripe.paymentMethods.retrieve(
+        payload.payment_method as string
+      )
+      paymentMethodType = paymentMethod.type
+    }
 
-    // if (payment) {
-    //   if (
-    //     payment.status == 'requires_action' ||
-    //     payment.status == 'paid' ||
-    //     payment.status == 'unpaid'
-    //   ) {
-    //     payment.merge({
-    //       status: payload.status,
-    //     })
-    //     await payment.save()
-    //     return
-    //   }
-    //   return
-    // }
-    return
+    const userId = Number(session.metadata!.userId)
+
+    const hasPayment = await Payment.findBy('id', payload.id.toString())
+
+    if (hasPayment) {
+      hasPayment.merge({
+        status: 'failed',
+      })
+
+      await hasPayment.save()
+      await PaymentFailure.create({
+        paymentId: hasPayment.id,
+        stripePaymentIntentId: payload.id,
+        failureCode: lastError?.code,
+        failureMessage: lastError?.message,
+        declineCode: lastError?.decline_code,
+        stripeErrorType: lastError?.type,
+      })
+      return
+    } else {
+      await Payment.create({
+        stripeCheckoutSessionId: session.id,
+        stripePaymentIntentId: payload.id,
+        amount: payload.amount,
+        currency: payload.currency,
+        paymentMethod: paymentMethodType!,
+        status: 'failed',
+        userId: userId,
+      })
+    }
   }
 
   async getAllPayment(limit: number, page: number) {
