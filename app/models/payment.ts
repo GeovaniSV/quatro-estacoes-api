@@ -3,12 +3,15 @@ import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import User from './user.js'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
-export default class PaymentIntent extends BaseModel {
+export default class Payment extends BaseModel {
   @column({ isPrimary: true })
   declare id: string
 
   @column()
   declare amount: number
+
+  @column()
+  declare paymentMethod: string
 
   @column()
   declare currency: string

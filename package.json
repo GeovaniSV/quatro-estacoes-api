@@ -58,6 +58,7 @@
     "@foadonis/openapi": "^0.4.1",
     "@vinejs/vine": "^3.0.1",
     "cloudinary": "^2.7.0",
+    "date-fns": "^4.1.0",
     "luxon": "^3.7.1",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",

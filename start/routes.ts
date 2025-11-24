@@ -42,3 +42,4 @@ router
 //StripeWebHooks public routes
 router.post('/stripe/webhook', [StripeWebHooksController, 'stripeListener'])
 router.get('/allpay', [StripeWebHooksController, 'getAllPayments'])
+router.delete('/deletepay', [StripeWebHooksController, 'delete'])

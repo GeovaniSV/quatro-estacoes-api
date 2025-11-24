@@ -1,14 +1,16 @@
 import env from '#start/env'
 import Cart from '#models/cart'
+import User from '#models/user'
 import Stripe from 'stripe'
-const STRIPE_API_SECRET_KEY = env.get('STRIPE_API_SECRET_KEY')!
+import Payment from '#models/payment'
+import db from '@adonisjs/lucid/services/db'
+import { addMinutes } from 'date-fns'
 
 //exceptions
 import { ItemNotFoundException } from '#exceptions/items_exceptions/item_not_found_exception'
-import User from '#models/user'
-import PaymentIntent from '#models/payment_intent'
 import HTTPAlreadyExistsException from '#exceptions/http_exceptions/HTTP_already_exists_exception'
-import db from '@adonisjs/lucid/services/db'
+
+const STRIPE_API_SECRET_KEY = env.get('STRIPE_API_SECRET_KEY')!
 
 export class StripeWebHookService {
   private stripe: Stripe
@@ -41,6 +43,14 @@ export class StripeWebHookService {
       }
     })
 
+    const dateNow = new Date()
+
+    const futureDate = addMinutes(dateNow, 30)
+
+    let timestampExpireOn = Math.floor(futureDate.getTime() / 1000)
+
+    console.log(timestampExpireOn)
+
     const session = await this.stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'payment',
@@ -52,57 +62,169 @@ export class StripeWebHookService {
       },
       client_reference_id: user.id?.toString(),
       payment_method_types: ['card', 'boleto'],
-      customer_email: user.email,
+      customer_creation: 'always',
+      expires_at: timestampExpireOn,
     })
 
     return session
   }
 
-  async handleStripeWebHookGenericEvent(payload: Stripe.CheckoutSessionCompletedEvent) {
-    const hasLog = await PaymentIntent.findBy('id', payload.data.object.id)
+  async handleCheckoutSessionCompleteEvent(payload: Stripe.Checkout.Session) {
+    console.log('Checkou completed: ', payload.payment_status)
+    const hasLog = await Payment.findBy('id', payload.id)
     if (hasLog) return new HTTPAlreadyExistsException('PaymentIntent already exists')
 
-    const session = await this.stripe.checkout.sessions.list({
-      limit: 1,
-      payment_intent: payload.data.object.payment_intent!.toString(),
-    })
+    let paymentMethodType = null
+    const paymentIntent = await this.stripe.paymentIntents.retrieve(
+      payload.payment_intent as string
+    )
+    if (payload.payment_intent) {
+      if (paymentIntent.payment_method) {
+        const paymentMethod = await this.stripe.paymentMethods.retrieve(
+          paymentIntent.payment_method as string
+        )
+        paymentMethodType = paymentMethod.type
+      }
+    }
 
-    console.log('idempotencyKey: ', payload.request?.idempotency_key)
     let checkoutLogObject = {
-      id: payload.data.object.id,
-      amount: payload.data.object.amount_total!,
-      currency: payload.data.object.currency!,
-      idempotencyKey: payload.request?.idempotency_key!,
-      userId: Number(payload.data.object.metadata!.userId),
-      status: payload.data.object.payment_status,
+      id: payload.id,
+      amount: payload.amount_total,
+      currency: payload.currency,
+      payment_method: paymentMethodType,
+      userId: Number(payload.metadata!.userId),
+      status: payload.payment_status && paymentIntent.status,
     }
 
-    if (session.data) {
-      session.data.map((data) => {
-        checkoutLogObject = {
-          id: data.id,
-          amount: data.amount_total!,
-          currency: data.currency!,
-          idempotencyKey: payload.request?.idempotency_key!,
-          userId: Number(data.client_reference_id),
-          status: data.payment_status,
-        }
-      })
+    if (paymentIntent) {
+      checkoutLogObject = {
+        id: payload.id,
+        amount: paymentIntent.amount!,
+        currency: paymentIntent.currency!,
+        payment_method: paymentMethodType,
+        userId: Number(payload.client_reference_id),
+        status: paymentIntent.status!,
+      }
     }
 
-    console.log('Session: ', session)
-    await PaymentIntent.create({
+    await Payment.create({
       id: checkoutLogObject.id,
-      amount: checkoutLogObject.amount,
-      currency: checkoutLogObject.currency,
-      idempotencyKey: checkoutLogObject.idempotencyKey,
+      amount: checkoutLogObject.amount!,
+      currency: checkoutLogObject.currency!,
+      paymentMethod: checkoutLogObject.payment_method!,
       userId: checkoutLogObject.userId,
       status: checkoutLogObject.status,
     })
   }
 
+  async handlePaymentIntentSucceeded(payload: Stripe.PaymentIntent) {
+    const session = await this.stripe.checkout.sessions.list({
+      limit: 1,
+      payment_intent: payload.id,
+    })
+
+    const sessionId = session.data.map((cs) => {
+      return cs.id
+    })
+    console.log('payment succeeded', payload.status)
+    console.log('Session id', sessionId.toString())
+
+    const payment = await Payment.findBy('id', sessionId.toString())
+
+    console.log('Banco de dados', payment)
+
+    if (payment) {
+      if (
+        payment.status == 'requires_action' ||
+        payment.status == 'paid' ||
+        payment.status == 'unpaid'
+      ) {
+        payment.merge({
+          status: payload.status,
+        })
+        await payment.save()
+        return
+      }
+      return
+    }
+
+    if (!payment) {
+      let paymentMethodType = null
+      if (payload.payment_method) {
+        const paymentMethod = await this.stripe.paymentMethods.retrieve(
+          payload.payment_method as string
+        )
+        paymentMethodType = paymentMethod.type
+      }
+      let sessionObjectSolved = {
+        id: 'Payment_Intent_ID' + payload.id,
+        amount: payload.amount,
+        currency: payload.currency,
+        payment_method: paymentMethodType!,
+        userId: 0,
+        status: payload.status,
+      }
+      session.data.map((cs) => {
+        sessionObjectSolved.id = cs.id
+        sessionObjectSolved.userId = Number(cs.metadata!.userId.toString())
+      })
+      await Payment.create({
+        id: sessionObjectSolved.id,
+        amount: sessionObjectSolved.amount,
+        currency: sessionObjectSolved.currency,
+        paymentMethod: sessionObjectSolved.payment_method,
+        status: sessionObjectSolved.status,
+        userId: sessionObjectSolved.userId,
+      })
+      return
+    }
+    return
+  }
+
+  async handlePaymentIntentPaymentFailed(payload: Stripe.PaymentIntent) {
+    console.log(payload.status)
+    // const session = await this.stripe.checkout.sessions.list({
+    //   limit: 1,
+    //   payment_intent: payload.id,
+    // })
+
+    // const sessionId = session.data.map((cs) => {
+    //   return cs.id
+    // })
+    // console.log('payment succeeded', payload.status)
+    // console.log('Session id', sessionId.toString())
+
+    // const payment = await Payment.findBy('id', sessionId.toString())
+
+    // console.log('Banco de dados', payment)
+
+    // if (payment) {
+    //   if (
+    //     payment.status == 'requires_action' ||
+    //     payment.status == 'paid' ||
+    //     payment.status == 'unpaid'
+    //   ) {
+    //     payment.merge({
+    //       status: payload.status,
+    //     })
+    //     await payment.save()
+    //     return
+    //   }
+    //   return
+    // }
+    return
+  }
+
   async getAllPayment(limit: number, page: number) {
-    const paymentes = await db.from('payment_intents').paginate(limit, page)
-    return paymentes
+    const payments = await db.from('payments').paginate(limit, page)
+    return payments
+  }
+
+  async deleteAllPayments() {
+    const payments = await Payment.findManyBy('userId', 1)
+
+    payments.map(async (payment) => {
+      await payment.delete()
+    })
   }
 }

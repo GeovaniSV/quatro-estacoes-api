@@ -32,20 +32,28 @@ export default class StripeWebHooksController {
         event = stripe.webhooks.constructEvent(rawBody!, signature!, endpointSecret)
       } catch (err) {
         console.log(`Webhook signature verification failed.`, err.message)
-        return response.badRequest
+        return response.badRequest({ Message: 'Webhook signature verification failed.' })
       }
     }
 
+    console.log(event?.type)
     switch (event!.type) {
       case 'checkout.session.completed':
-        const paymentEvent: Stripe.CheckoutSessionCompletedEvent = event
-        console.log(paymentEvent.request?.idempotency_key)
-        await this.stripeWebHookService.handleStripeWebHookGenericEvent(paymentEvent)
+        const checkoutSessionCompleted: Stripe.Checkout.Session = event.data.object
+        await this.stripeWebHookService.handleCheckoutSessionCompleteEvent(checkoutSessionCompleted)
         break
 
       case 'checkout.session.expired':
-        const checkoutSessionExpired: Stripe.CheckoutSessionExpiredEvent = event
+        const checkoutSessionExpired: Stripe.Checkout.Session = event.data.object
         console.log(`Checkout session expired: ${checkoutSessionExpired} `)
+        break
+      case 'payment_intent.succeeded':
+        const paymentIntentSucceeded: Stripe.PaymentIntent = event.data.object
+        await this.stripeWebHookService.handlePaymentIntentSucceeded(paymentIntentSucceeded)
+        break
+      case 'payment_intent.payment_failed':
+        const paymentIntentPaymentFailed: Stripe.PaymentIntent = event.data.object
+        await this.stripeWebHookService.handlePaymentIntentPaymentFailed(paymentIntentPaymentFailed)
         break
 
       default:
@@ -57,7 +65,12 @@ export default class StripeWebHooksController {
   }
 
   async getAllPayments({ response }: HttpContext) {
-    const payment: any = await this.stripeWebHookService.getAllPayment(1, 1)
+    const payment: any = await this.stripeWebHookService.getAllPayment(1, 10)
+    return response.ok({ payment: payment })
+  }
+
+  async delete({ response }: HttpContext) {
+    const payment: any = await this.stripeWebHookService.deleteAllPayments()
     return response.ok({ payment: payment })
   }
 }

@@ -10,7 +10,7 @@ import Cart from '#models/cart'
 import Profile from '#models/profile'
 
 import { ApiProperty } from '@foadonis/openapi/decorators'
-import PaymentIntent from './payment_intent.js'
+import PaymentIntent from './payment.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
