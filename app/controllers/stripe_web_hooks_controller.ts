@@ -51,6 +51,7 @@ export default class StripeWebHooksController {
         const paymentIntentSucceeded: Stripe.PaymentIntent = event.data.object
         await this.stripeWebHookService.handlePaymentIntentSucceeded(paymentIntentSucceeded)
         break
+      case 'payment_intent.canceled':
       case 'payment_intent.payment_failed':
         const paymentIntentPaymentFailed: Stripe.PaymentIntent = event.data.object
         await this.stripeWebHookService.handlePaymentIntentPaymentFailed(paymentIntentPaymentFailed)

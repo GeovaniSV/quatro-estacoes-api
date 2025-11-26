@@ -3,6 +3,7 @@ import router from '@adonisjs/core/services/router'
 
 const UsersController = () => import('#controllers/users_controller')
 const ProductsController = () => import('#controllers/products_controller')
+const OrdersController = () => import('#controllers/orders_controller')
 
 router
   .group(() => {
@@ -26,5 +27,12 @@ router
         })
         .prefix('products')
     })
+
+    router
+      .group(() => {
+        router.get('/', [OrdersController, 'index'])
+        router.put('/:id', [OrdersController, 'index'])
+      })
+      .prefix('orders')
   })
   .use([middleware.auth({ guards: ['api'] }), middleware.adminOnly()])

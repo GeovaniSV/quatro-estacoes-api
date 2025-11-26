@@ -3,20 +3,23 @@ import Cart from '#models/cart'
 import User from '#models/user'
 import Stripe from 'stripe'
 import Payment from '#models/payment'
+import PaymentFailure from '#models/payment_failure'
 import db from '@adonisjs/lucid/services/db'
 import { addMinutes } from 'date-fns'
+import { inject } from '@adonisjs/core'
+import { OrderService } from './order_service.js'
 
 //exceptions
 import { ItemNotFoundException } from '#exceptions/items_exceptions/item_not_found_exception'
 import HTTPAlreadyExistsException from '#exceptions/http_exceptions/HTTP_already_exists_exception'
-import PaymentFailure from '#models/payment_failure'
 
 const STRIPE_API_SECRET_KEY = env.get('STRIPE_API_SECRET_KEY')!
 
+@inject()
 export class StripeWebHookService {
   private stripe: Stripe
 
-  constructor() {
+  constructor(protected orderService: OrderService) {
     this.stripe = new Stripe(STRIPE_API_SECRET_KEY, {
       apiVersion: '2025-10-29.clover',
     })
@@ -71,8 +74,8 @@ export class StripeWebHookService {
   }
 
   async handleCheckoutSessionCompleteEvent(payload: Stripe.Checkout.Session) {
-    console.log('Checkou completed: ', payload.payment_status)
-    const hasLog = await Payment.findBy('id', payload.id)
+    console.log('passei aqui')
+    const hasLog = await Payment.findBy('stripeCheckoutSessionId', payload.id.toString())
     if (hasLog) return new HTTPAlreadyExistsException('PaymentIntent already exists')
 
     let paymentMethodType = null
@@ -93,7 +96,7 @@ export class StripeWebHookService {
       amount: payload.amount_total,
       currency: payload.currency,
       payment_method: paymentMethodType,
-      userId: Number(payload.metadata!.userId),
+      cartId: Number(payload.metadata!.cartId),
       status: payload.payment_status && paymentIntent.status,
     }
 
@@ -103,7 +106,7 @@ export class StripeWebHookService {
         amount: paymentIntent.amount!,
         currency: paymentIntent.currency!,
         payment_method: paymentMethodType,
-        userId: Number(payload.client_reference_id),
+        cartId: Number(payload.metadata!.cartId),
         status: paymentIntent.status!,
       }
     }
@@ -113,26 +116,23 @@ export class StripeWebHookService {
       amount: checkoutLogObject.amount!,
       currency: checkoutLogObject.currency!,
       paymentMethod: checkoutLogObject.payment_method!,
-      userId: checkoutLogObject.userId,
+      cartId: checkoutLogObject.cartId,
       status: checkoutLogObject.status,
     })
   }
 
   async handlePaymentIntentSucceeded(payload: Stripe.PaymentIntent) {
-    const session = await this.stripe.checkout.sessions.list({
+    const sessions = await this.stripe.checkout.sessions.list({
       limit: 1,
       payment_intent: payload.id,
     })
 
-    const sessionId = session.data.map((cs) => {
-      return cs.id
-    })
-    console.log('payment succeeded', payload.status)
-    console.log('Session id', sessionId.toString())
+    const session = sessions.data[0]
+    const cartId = Number(session.metadata!.cartId)
 
-    const payment = await Payment.findBy('id', sessionId.toString())
+    console.log(cartId)
 
-    console.log('Banco de dados', payment)
+    const payment = await Payment.findBy('stripeCheckoutSessionId', session.id.toString())
 
     if (payment) {
       if (
@@ -144,8 +144,8 @@ export class StripeWebHookService {
           status: payload.status,
         })
         await payment.save()
-        return
       }
+      await this.orderService.store(cartId, payment.id)
       return
     }
 
@@ -162,37 +162,36 @@ export class StripeWebHookService {
         amount: payload.amount,
         currency: payload.currency,
         payment_method: paymentMethodType!,
-        userId: 0,
+        cartId: cartId,
         status: payload.status,
       }
-      session.data.map((cs) => {
-        sessionObjectSolved.id = cs.id
-        sessionObjectSolved.userId = Number(cs.metadata!.userId.toString())
-      })
-      await Payment.create({
+
+      sessionObjectSolved.id = session.id
+      sessionObjectSolved.cartId = Number(session.metadata!.cartId)
+
+      const newPayment = await Payment.create({
         stripeCheckoutSessionId: sessionObjectSolved.id,
         amount: sessionObjectSolved.amount,
         currency: sessionObjectSolved.currency,
         paymentMethod: sessionObjectSolved.payment_method,
         status: sessionObjectSolved.status,
-        userId: sessionObjectSolved.userId,
+        cartId: sessionObjectSolved.cartId,
       })
+      await this.orderService.store(cartId, newPayment!.id)
       return
     }
+
     return
   }
 
   async handlePaymentIntentPaymentFailed(payload: Stripe.PaymentIntent) {
     console.log(payload.status)
     const lastError = payload.last_payment_error
-
     const sessions = await this.stripe.checkout.sessions.list({
       limit: 1,
       payment_intent: payload.id,
     })
-
     const session = sessions.data[0]
-
     let paymentMethodType = null
     if (payload.payment_method) {
       const paymentMethod = await this.stripe.paymentMethods.retrieve(
@@ -200,16 +199,12 @@ export class StripeWebHookService {
       )
       paymentMethodType = paymentMethod.type
     }
-
-    const userId = Number(session.metadata!.userId)
-
+    const cartId = Number(session.metadata!.cartId)
     const hasPayment = await Payment.findBy('id', payload.id.toString())
-
     if (hasPayment) {
       hasPayment.merge({
         status: 'failed',
       })
-
       await hasPayment.save()
       await PaymentFailure.create({
         paymentId: hasPayment.id,
@@ -228,7 +223,7 @@ export class StripeWebHookService {
         currency: payload.currency,
         paymentMethod: paymentMethodType!,
         status: 'failed',
-        userId: userId,
+        cartId: cartId,
       })
     }
   }
@@ -239,7 +234,7 @@ export class StripeWebHookService {
   }
 
   async deleteAllPayments() {
-    const payments = await Payment.findManyBy('userId', 1)
+    const payments = await Payment.findManyBy('cartId', 1)
 
     payments.map(async (payment) => {
       await payment.delete()

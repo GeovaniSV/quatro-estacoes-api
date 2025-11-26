@@ -9,11 +9,12 @@ export default class extends BaseSchema {
       table.string('stripe_checkout_session_id')
       table.string('stripe_payment_intent_id')
       table.integer('amount')
+      table.string('amount_view')
       table.string('payment_method')
       table.string('currency', 3)
       table.string('status')
 
-      table.integer('user_id').references('users.id').onDelete('CASCADE')
+      table.integer('cart_id').unsigned().references('carts.id').onDelete('CASCADE')
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

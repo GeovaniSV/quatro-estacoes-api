@@ -1,7 +1,60 @@
+import Cart from '#models/cart'
 import { inject } from '@adonisjs/core'
 import { MoneyManagement } from '../utils/money.js'
+import { CartNotFoundException } from '#exceptions/carts_exceptions/cart_not_found_exception'
+import Payment from '#models/payment'
+import HTTPNotFoundException from '#exceptions/http_exceptions/HTTP_not_found_exception'
+import Order from '#models/order'
+import OrderItem from '#models/order_item'
 
 @inject()
 export class OrderService {
   constructor(protected moneyManagement: MoneyManagement) {}
+
+  async store(cartId: number, paymentId: number) {
+    const cart = await Cart.findBy('id', cartId)
+    if (!cart) throw new CartNotFoundException()
+    await cart.load('items')
+    const items = cart.items
+    items.map(async (item) => await item.load('product'))
+
+    const payment = await Payment.findBy('id', paymentId)
+    if (!payment) throw new HTTPNotFoundException('Payment not found')
+
+    const priceView = this.moneyManagement.createView(payment.amount)
+
+    const order = await Order.create({
+      userId: cart.user_id,
+      paymentId: payment.id,
+      purchase_price: payment.amount,
+      price_view: priceView,
+      status: 'em andamento',
+    })
+
+    items.map(async (item) => {
+      await OrderItem.create({
+        productQuantity: item.productQuantity,
+        productColor: item.productColor,
+        itemPrice: item.itemPrice,
+        priceView: item.priceView,
+        orderId: order.id,
+        productId: item.product.id,
+      })
+    })
+  }
+
+  async getAllOrder(page: number, limit: number) {
+    const orders = await Order.query().preload('user').preload('items').paginate(page, limit)
+    if (!orders || OrderService.length == 0) throw new HTTPNotFoundException('Orders not found')
+    return orders
+  }
+
+  async update(orderId: number, payload: Partial<Order>) {
+    const order = await Order.findBy('id', orderId)
+    if (!order) throw new HTTPNotFoundException('Order not found')
+
+    order.merge(payload)
+    await order.save()
+    return order
+  }
 }

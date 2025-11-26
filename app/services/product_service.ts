@@ -16,10 +16,12 @@ export class ProductService {
 
     if (hasProduct) throw new ProductAlreadyExistsException()
 
-    const product = await Product.create(data)
-
-    const priceView = this.moneyManagement.createView(product.productPrice)
-    product.merge({
+    const priceView = this.moneyManagement.createView(data.productPrice!)
+    const product = await Product.create({
+      productName: data.productName,
+      productDescription: data.productDescription,
+      productPrice: data.productPrice,
+      imagePublicId: data.imagePublicId,
       priceView: priceView,
     })
 

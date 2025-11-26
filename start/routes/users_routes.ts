@@ -36,7 +36,7 @@ router
       .prefix('items')
 
     //Orders routes
-    router.post('/stripe/checkout', [StripeWebHooksController, 'stripeCheckout'])
+    router.post('/payment/checkout', [StripeWebHooksController, 'stripeCheckout'])
   })
   .use(
     middleware.auth({
