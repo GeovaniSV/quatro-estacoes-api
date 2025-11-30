@@ -5,7 +5,7 @@ const UsersController = () => import('#controllers/users_controller')
 const ProfileController = () => import('#controllers/profiles_controller')
 const CartsController = () => import('#controllers/carts_controller')
 const ItemsController = () => import('#controllers/items_controller')
-// const OrdersController = () => import('#controllers/orders_controller')
+const OrdersController = () => import('#controllers/orders_controller')
 const StripeWebHooksController = () => import('#controllers/stripe_web_hooks_controller')
 
 router
@@ -23,6 +23,9 @@ router
         //Cart routes
         router.get('/carts', [CartsController, 'show'])
         router.put('/carts', [CartsController, 'update'])
+
+        //orders routes
+        router.get('/orders', [OrdersController, 'userOrders'])
       })
       .prefix('users')
 

@@ -31,7 +31,7 @@ router
     router
       .group(() => {
         router.get('/', [OrdersController, 'index'])
-        router.put('/:id', [OrdersController, 'index'])
+        router.put('/:id', [OrdersController, 'update'])
       })
       .prefix('orders')
   })

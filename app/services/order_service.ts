@@ -61,8 +61,24 @@ export class OrderService {
   }
 
   async getAllOrder(page: number, limit: number) {
-    const orders = await Order.query().preload('user').preload('items').paginate(page, limit)
+    const orders = await Order.query()
+      .preload('user')
+      .preload('OrderItems')
+      .preload('payment')
+      .paginate(page, limit)
     if (!orders || OrderService.length == 0) throw new HTTPNotFoundException('Orders not found')
+    return orders
+  }
+
+  async getUserOrders(userId: number, page: number, limit: number) {
+    console.log('user id: ', userId)
+    const orders = await Order.query()
+      .preload('OrderItems')
+      .preload('payment')
+      .where('user_id', userId)
+      .paginate(page, limit)
+    if (!orders || orders.length === 0) throw new HTTPNotFoundException('Orders not found')
+
     return orders
   }
 

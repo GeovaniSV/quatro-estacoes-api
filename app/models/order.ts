@@ -2,8 +2,8 @@ import OrderItem from './order_item.js'
 import Payment from './payment.js'
 import User from './user.js'
 import { DateTime } from 'luxon'
-import type { HasMany, HasOne, BelongsTo } from '@adonisjs/lucid/types/relations'
-import { BaseModel, column, hasMany, hasOne, belongsTo } from '@adonisjs/lucid/orm'
+import type { HasMany, BelongsTo } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, hasMany, belongsTo } from '@adonisjs/lucid/orm'
 
 export default class Order extends BaseModel {
   @column({ isPrimary: true })
@@ -24,11 +24,11 @@ export default class Order extends BaseModel {
   @column()
   declare paymentId: number
 
-  @hasOne(() => Payment)
-  declare payment: HasOne<typeof Payment>
+  @belongsTo(() => Payment)
+  declare payment: BelongsTo<typeof Payment>
 
   @hasMany(() => OrderItem)
-  declare items: HasMany<typeof OrderItem>
+  declare OrderItems: HasMany<typeof OrderItem>
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
