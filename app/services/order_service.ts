@@ -1,22 +1,33 @@
+import Order from '#models/order'
 import Cart from '#models/cart'
+import OrderItem from '#models/order_item'
+import User from '#models/user'
+import Payment from '#models/payment'
+import HTTPNotFoundException from '#exceptions/http_exceptions/HTTP_not_found_exception'
 import { inject } from '@adonisjs/core'
 import { MoneyManagement } from '../utils/money.js'
 import { CartNotFoundException } from '#exceptions/carts_exceptions/cart_not_found_exception'
-import Payment from '#models/payment'
-import HTTPNotFoundException from '#exceptions/http_exceptions/HTTP_not_found_exception'
-import Order from '#models/order'
-import OrderItem from '#models/order_item'
+import { UserNotFoundException } from '#exceptions/users_exceptions/user_not_found_exception'
+import { SendEmail } from '../utils/handleEmail.js'
+import HTTPInternalErrorException from '#exceptions/http_exceptions/HTTP_internal_error_execption'
 
 @inject()
 export class OrderService {
-  constructor(protected moneyManagement: MoneyManagement) {}
+  constructor(
+    protected moneyManagement: MoneyManagement,
+    protected sendEmail: SendEmail
+  ) {}
 
   async store(cartId: number, paymentId: number) {
     const cart = await Cart.findBy('id', cartId)
     if (!cart) throw new CartNotFoundException()
+    if (!cart) throw new CartNotFoundException()
     await cart.load('items')
     const items = cart.items
     items.map(async (item) => await item.load('product'))
+
+    const user = await User.findBy('id', cart.user_id)
+    if (!user) throw new UserNotFoundException()
 
     const payment = await Payment.findBy('id', paymentId)
     if (!payment) throw new HTTPNotFoundException('Payment not found')
@@ -41,6 +52,12 @@ export class OrderService {
         productId: item.product.id,
       })
     })
+
+    try {
+      this.sendEmail.sendClientEmail(user.email, user.userName, items, cart.priceView)
+    } catch (error) {
+      if (error) throw new HTTPInternalErrorException('Something went wrong while sending email')
+    }
   }
 
   async getAllOrder(page: number, limit: number) {

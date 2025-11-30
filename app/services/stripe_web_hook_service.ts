@@ -53,8 +53,6 @@ export class StripeWebHookService {
 
     let timestampExpireOn = Math.floor(futureDate.getTime() / 1000)
 
-    console.log(timestampExpireOn)
-
     const session = await this.stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'payment',
@@ -74,7 +72,6 @@ export class StripeWebHookService {
   }
 
   async handleCheckoutSessionCompleteEvent(payload: Stripe.Checkout.Session) {
-    console.log('passei aqui')
     const hasLog = await Payment.findBy('stripeCheckoutSessionId', payload.id.toString())
     if (hasLog) return new HTTPAlreadyExistsException('PaymentIntent already exists')
 
@@ -130,8 +127,6 @@ export class StripeWebHookService {
     const session = sessions.data[0]
     const cartId = Number(session.metadata!.cartId)
 
-    console.log(cartId)
-
     const payment = await Payment.findBy('stripeCheckoutSessionId', session.id.toString())
 
     if (payment) {
@@ -185,7 +180,6 @@ export class StripeWebHookService {
   }
 
   async handlePaymentIntentPaymentFailed(payload: Stripe.PaymentIntent) {
-    console.log(payload.status)
     const lastError = payload.last_payment_error
     const sessions = await this.stripe.checkout.sessions.list({
       limit: 1,
