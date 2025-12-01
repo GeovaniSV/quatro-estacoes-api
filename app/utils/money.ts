@@ -17,8 +17,22 @@ export class MoneyManagement {
 
   createView(value: number) {
     let valueToString = value.toString()
-    valueToString = valueToString.replace(/\B(?=(..$))+/g, ',')
-    valueToString = valueToString.replace(/\B(?=(\d{3})+(?!\d|..$))/g, '.')
+    if (value >= 100) {
+      valueToString = valueToString.replace(/\B(?=(..$))+/g, ',')
+      valueToString = valueToString.replace(/\B(?=(\d{3})+(?!\d|..$))/g, '.')
+    }
+
+    if (value < 100) {
+      valueToString = '0' + valueToString
+      valueToString = valueToString.replace(/\B(?=(..$))+/g, ',')
+      valueToString = valueToString.replace(/\B(?=(\d{3})+(?!\d|..$))/g, '.')
+    }
+
+    if (value < 10) {
+      valueToString = '0' + valueToString
+      valueToString = valueToString.replace(/\B(?=(..$))+/g, ',')
+      valueToString = valueToString.replace(/\B(?=(\d{3})+(?!\d|..$))/g, '.')
+    }
     return valueToString
   }
 

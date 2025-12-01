@@ -22,7 +22,6 @@ router
 
         //Cart routes
         router.get('/carts', [CartsController, 'show'])
-        router.put('/carts', [CartsController, 'update'])
 
         //orders routes
         router.get('/orders', [OrdersController, 'userOrders'])

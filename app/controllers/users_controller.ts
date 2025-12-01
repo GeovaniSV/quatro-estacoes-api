@@ -43,6 +43,17 @@ export default class UsersController {
       },
     },
   })
+  @ApiResponse({
+    status: 422,
+    description: 'Bad Request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unprocessable Entity' },
+        code: { type: 'string', example: '' },
+      },
+    },
+  })
   async register({ request, response }: HttpContext) {
     const requestPayload = await request.validateUsing(createUserRequestBody)
 
@@ -89,6 +100,17 @@ export default class UsersController {
       properties: {
         message: { type: 'string', example: 'User invalid credentials' },
         code: { type: 'string', example: 'E_BAD_REQUEST' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'Bad Request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unprocessable Entity' },
+        code: { type: 'string', example: '' },
       },
     },
   })

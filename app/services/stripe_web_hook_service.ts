@@ -4,7 +4,6 @@ import User from '#models/user'
 import Stripe from 'stripe'
 import Payment from '#models/payment'
 import PaymentFailure from '#models/payment_failure'
-import db from '@adonisjs/lucid/services/db'
 import { addMinutes } from 'date-fns'
 import { inject } from '@adonisjs/core'
 import { OrderService } from './order_service.js'
@@ -220,18 +219,5 @@ export class StripeWebHookService {
         cartId: cartId,
       })
     }
-  }
-
-  async getAllPayment(limit: number, page: number) {
-    const payments = await db.from('payments').paginate(limit, page)
-    return payments
-  }
-
-  async deleteAllPayments() {
-    const payments = await Payment.findManyBy('cartId', 1)
-
-    payments.map(async (payment) => {
-      await payment.delete()
-    })
   }
 }

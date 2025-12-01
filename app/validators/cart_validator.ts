@@ -7,10 +7,4 @@ const createCartValidator = vine.compile(
   })
 )
 
-const updateCartValidator = vine.compile(
-  vine.object({
-    cartPrice: vine.number(),
-  })
-)
-
-export { createCartValidator, updateCartValidator }
+export { createCartValidator }

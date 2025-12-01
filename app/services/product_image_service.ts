@@ -12,7 +12,7 @@ cloudinary.config({
 })
 /**
  * Para recuperar essas fotos no front-end utilize a URL abaixo:
- * https://res.cloudinary.com/<seu_cloud_name>/image/upload/products/<nome_do_produto>/<public_id_da_foto>
+ * https://res.cloudinary.com/dv2z56dp9/image/upload/products/<nome_do_produto>/<public_id_da_foto>
  */
 
 export class ProductImageService {

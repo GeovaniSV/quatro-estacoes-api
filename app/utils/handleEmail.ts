@@ -3,7 +3,13 @@ import { transporter } from '#config/nodemailer'
 import Item from '#models/item'
 
 class SendEmail {
-  sendClientEmail(userEmail: string, userName: string, items: Item[], amounTotal: string) {
+  sendClientEmail(
+    userEmail: string,
+    userName: string,
+    items: Item[],
+    amounTotal: string,
+    orderId: number
+  ) {
     const rows = items
       .map((item: Partial<Item>) => {
         return `
@@ -22,7 +28,7 @@ class SendEmail {
       .sendMail({
         from: `4 Estações Vasos & Acessórios <${env.get('nodemailer_email')}> `,
         to: userEmail,
-        subject: 'Enviando email teste',
+        subject: 'Pedido 4 Estações Vasos & Acessórios',
         html: `  <!doctype html>
   <html lang="pt-BR">
     <head>
@@ -43,7 +49,7 @@ class SendEmail {
     </head>
     <body>
       <div class="card">
-        <h2>Confirmação de pedido</h2>
+        <h2>Confirmação de pedido - #${orderId}</h2>
         <p>Olá <strong>${userName}</strong>, obrigado pela sua compra!</p>
 
         <table role="presentation">

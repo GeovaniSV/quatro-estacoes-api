@@ -11,6 +11,7 @@ import { CartNotFoundException } from '#exceptions/carts_exceptions/cart_not_fou
 import { ItemNotFoundException } from '#exceptions/items_exceptions/item_not_found_exception'
 import { ProductNotFoundException } from '#exceptions/products_exceptions/product_not_found_exception'
 import HTTPBadRequestException from '#exceptions/http_exceptions/http_bad_request_exception'
+import { ForbiddenException } from '#exceptions/forbidden_exception'
 
 @inject()
 export class ItemService {
@@ -50,6 +51,8 @@ export class ItemService {
       priceView: priceView,
     })
 
+    await item.load('product')
+
     return item
   }
 
@@ -69,9 +72,14 @@ export class ItemService {
     return item
   }
 
-  async update(id: number, data: Partial<Item>) {
-    const item = await Item.findBy('id', id)
+  async update(user: Partial<User>, itemId: number, data: Partial<Item>) {
+    const item = await Item.findBy('id', itemId)
     if (!item) throw new ItemNotFoundException()
+
+    console.log(user.cart)
+
+    if (item.cartId != user.cart!.id) throw new ForbiddenException()
+
     await item.load('product')
 
     const product_price = item.product.productPrice

@@ -53,8 +53,10 @@ export class OrderService {
       })
     })
 
+    const orderId = order.id
+
     try {
-      this.sendEmail.sendClientEmail(user.email, user.userName, items, cart.priceView)
+      this.sendEmail.sendClientEmail(user.email, user.userName, items, cart.priceView, orderId)
     } catch (error) {
       if (error) throw new HTTPInternalErrorException('Something went wrong while sending email')
     }
@@ -71,7 +73,6 @@ export class OrderService {
   }
 
   async getUserOrders(userId: number, page: number, limit: number) {
-    console.log('user id: ', userId)
     const orders = await Order.query()
       .preload('OrderItems')
       .preload('payment')

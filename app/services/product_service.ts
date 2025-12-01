@@ -52,7 +52,12 @@ export class ProductService {
     const priceView = this.moneyManagement.createView(product.productPrice)
     data.priceView = priceView
 
-    product.merge(data)
+    product.merge({
+      productName: data.productName,
+      productDescription: data.productDescription,
+      productPrice: data.productPrice,
+      priceView: data.priceView,
+    })
     await product.save()
 
     return product
