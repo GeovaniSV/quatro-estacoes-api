@@ -28,7 +28,7 @@ class SendEmail {
       .sendMail({
         from: `4 Estações Vasos & Acessórios <${env.get('nodemailer_email')}> `,
         to: userEmail,
-        subject: 'Pedido 4 Estações Vasos & Acessórios',
+        subject: `Pedido #${orderId} - 4 Estações Vasos & Acessórios`,
         html: `  <!doctype html>
   <html lang="pt-BR">
     <head>
@@ -75,7 +75,7 @@ class SendEmail {
         </table>
         <p>Assim que seus produtos ficarem prontos você receberá um aviso via email</p>
 
-        <p class="footer">Se precisar de ajuda, entre em contato com a empresa através do site!</p>
+        <p class="footer">Se precisar de mais informações, entre em contato com a empresa através do site!</p>
       </div>
     </body>
   </html>

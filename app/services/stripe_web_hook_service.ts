@@ -193,7 +193,7 @@ export class StripeWebHookService {
       paymentMethodType = paymentMethod.type
     }
     const cartId = Number(session.metadata!.cartId)
-    const hasPayment = await Payment.findBy('id', payload.id.toString())
+    const hasPayment = await Payment.findBy('stripeCheckoutSessionId', session.id.toString())
     if (hasPayment) {
       hasPayment.merge({
         status: 'failed',
@@ -201,7 +201,7 @@ export class StripeWebHookService {
       await hasPayment.save()
       await PaymentFailure.create({
         paymentId: hasPayment.id,
-        stripePaymentIntentId: payload.id,
+        stripeCheckoutSessionId: session.id.toString(),
         failureCode: lastError?.code,
         failureMessage: lastError?.message,
         declineCode: lastError?.decline_code,
@@ -209,7 +209,7 @@ export class StripeWebHookService {
       })
       return
     } else {
-      await Payment.create({
+      const payment = await Payment.create({
         stripeCheckoutSessionId: session.id,
         stripePaymentIntentId: payload.id,
         amount: payload.amount,
@@ -217,6 +217,15 @@ export class StripeWebHookService {
         paymentMethod: paymentMethodType!,
         status: 'failed',
         cartId: cartId,
+      })
+
+      await PaymentFailure.create({
+        paymentId: payment.id,
+        stripeCheckoutSessionId: session.id.toString(),
+        failureCode: lastError?.code,
+        failureMessage: lastError?.message,
+        declineCode: lastError?.decline_code,
+        stripeErrorType: lastError?.type,
       })
     }
   }

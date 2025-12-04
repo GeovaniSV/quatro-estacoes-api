@@ -70,9 +70,6 @@ export class UserService {
 
     if (!user) throw new UserNotFoundException()
 
-    await user.load('profile')
-    await user.load('cart')
-
     return user
   }
 

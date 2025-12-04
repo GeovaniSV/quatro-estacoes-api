@@ -88,9 +88,9 @@ export class ItemService {
     if (data.productQuantity) {
       items_price = this.moneyManagement.multiply(product_price, data.productQuantity)
       data.itemPrice = items_price
-      data.priceView = this.moneyManagement.createView(items_price)
     }
 
+    data.priceView = this.moneyManagement.createView(data.itemPrice!)
     item.merge(data)
     await item.save()
     return item

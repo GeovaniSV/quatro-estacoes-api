@@ -49,14 +49,15 @@ export class ProductService {
 
     if (!product) throw new ProductNotFoundException()
 
-    const priceView = this.moneyManagement.createView(product.productPrice)
-    data.priceView = priceView
+    const priceView = this.moneyManagement.createView(data.productPrice!)
+
+    console.log(priceView)
 
     product.merge({
       productName: data.productName,
       productDescription: data.productDescription,
       productPrice: data.productPrice,
-      priceView: data.priceView,
+      priceView: priceView,
     })
     await product.save()
 

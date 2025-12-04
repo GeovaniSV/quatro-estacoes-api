@@ -7,7 +7,7 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('stripe_payment_id')
-      table.string('stripe_checkout_session_id')
+      table.string('stripe_checkout_session')
       table.string('failure_code')
       table.string('failure_message')
       table.string('decline_code')

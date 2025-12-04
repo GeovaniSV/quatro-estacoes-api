@@ -72,24 +72,24 @@ export default class StripeWebHooksController {
     switch (event!.type) {
       case 'checkout.session.completed':
         const checkoutSessionCompleted: Stripe.Checkout.Session = event.data.object
-        await this.stripeWebHookService.handleCheckoutSessionCompleteEvent(checkoutSessionCompleted)
         console.log('Webhook: ', event.type)
+        await this.stripeWebHookService.handleCheckoutSessionCompleteEvent(checkoutSessionCompleted)
         break
 
       case 'checkout.session.expired':
-        // const checkoutSessionExpired: Stripe.Checkout.Session = event.data.object
         console.log('Webhook: ', event.type)
+        // const checkoutSessionExpired: Stripe.Checkout.Session = event.data.object
         break
       case 'payment_intent.succeeded':
         const paymentIntentSucceeded: Stripe.PaymentIntent = event.data.object
-        await this.stripeWebHookService.handlePaymentIntentSucceeded(paymentIntentSucceeded)
         console.log('Webhook: ', event.type)
+        await this.stripeWebHookService.handlePaymentIntentSucceeded(paymentIntentSucceeded)
         break
       case 'payment_intent.canceled':
       case 'payment_intent.payment_failed':
         const paymentIntentPaymentFailed: Stripe.PaymentIntent = event.data.object
-        await this.stripeWebHookService.handlePaymentIntentPaymentFailed(paymentIntentPaymentFailed)
         console.log('Webhook: ', event.type)
+        await this.stripeWebHookService.handlePaymentIntentPaymentFailed(paymentIntentPaymentFailed)
         break
 
       default:

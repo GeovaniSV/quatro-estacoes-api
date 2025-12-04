@@ -18,7 +18,7 @@ router
 
         //profile routes
         router.get('/profile', [ProfileController, 'show'])
-        router.put('/profile', [ProfileController, 'update'])
+        // router.put('/profile', [ProfileController, 'update'])
 
         //Cart routes
         router.get('/carts', [CartsController, 'show'])

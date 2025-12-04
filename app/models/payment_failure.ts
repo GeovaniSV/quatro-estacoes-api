@@ -8,7 +8,7 @@ export default class PaymentFailure extends BaseModel {
   declare id: string
 
   @column()
-  declare stripeCheckoutSession: string
+  declare stripeCheckoutSessionId: string
 
   @column()
   declare stripePaymentIntentId: string

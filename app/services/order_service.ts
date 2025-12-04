@@ -51,12 +51,14 @@ export class OrderService {
         orderId: order.id,
         productId: item.product.id,
       })
+
+      await item.delete()
     })
 
     const orderId = order.id
 
     try {
-      this.sendEmail.sendClientEmail(user.email, user.userName, items, cart.priceView, orderId)
+      this.sendEmail.sendClientEmail(user.email, user.userName, items, priceView, orderId)
     } catch (error) {
       if (error) throw new HTTPInternalErrorException('Something went wrong while sending email')
     }
