@@ -73,7 +73,6 @@ class SendEmail {
             </tr>
           </tfoot>
         </table>
-        <p>Assim que seus produtos ficarem prontos você receberá um aviso via email</p>
 
         <p class="footer">Se precisar de mais informações, entre em contato com a empresa através do site!</p>
       </div>
