@@ -198,9 +198,10 @@ export default class ItemsController {
     },
   })
   //update item
-  async update({ params, request, response }: HttpContext) {
+  async update({ auth, params, request, response }: HttpContext) {
+    const user = auth.user
     const payload = await request.validateUsing(updateItemValidator)
-    const item = await this.itemService.update(params.id, payload)
+    const item = await this.itemService.update(user!, params.id, payload)
 
     return response.ok({ data: item })
   }
@@ -212,6 +213,17 @@ export default class ItemsController {
     status: 200,
     description: 'Retorna um objeto do item deletado',
     type: Item,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized access',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized acces' },
+        code: { type: 'string', example: 'E_UNAUTHORIZED' },
+      },
+    },
   })
   @ApiResponse({
     status: 404,

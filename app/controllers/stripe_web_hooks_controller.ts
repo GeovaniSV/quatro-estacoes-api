@@ -1,16 +1,49 @@
 import env from '#start/env'
+import stripe, { Stripe } from 'stripe'
 import type { HttpContext } from '@adonisjs/core/http'
 import { StripeWebHookService } from '#services/stripe_web_hook_service'
 import { inject } from '@adonisjs/core'
-
+import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
-import stripe, { Stripe } from 'stripe'
 
 @inject()
 export default class StripeWebHooksController {
   constructor(private stripeWebHookService: StripeWebHookService) {}
 
+  @ApiOperation({
+    description:
+      'Cria uma sessão de checkout na plataforma de pagamentos da Stripe, enviando as informações do carrinho do usuário.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Created',
+    schema: {
+      type: 'string',
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized ',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized access' },
+        code: { type: 'string', example: 'E_UNAUTHORIZED' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Items not found ',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Items not found' },
+        code: { type: 'string', example: 'E_NOT_FOUND' },
+      },
+    },
+  })
   async stripeCheckout({ auth, response }: HttpContext) {
     const user = auth.user
     if (!user) throw new UnauthorizedException()
@@ -32,20 +65,31 @@ export default class StripeWebHooksController {
         event = stripe.webhooks.constructEvent(rawBody!, signature!, endpointSecret)
       } catch (err) {
         console.log(`Webhook signature verification failed.`, err.message)
-        return response.badRequest
+        return response.badRequest({ Message: 'Webhook signature verification failed.' })
       }
     }
 
     switch (event!.type) {
       case 'checkout.session.completed':
-        const paymentEvent: Stripe.CheckoutSessionCompletedEvent = event
-        console.log(paymentEvent.request?.idempotency_key)
-        await this.stripeWebHookService.handleStripeWebHookGenericEvent(paymentEvent)
+        const checkoutSessionCompleted: Stripe.Checkout.Session = event.data.object
+        console.log('Webhook: ', event.type)
+        await this.stripeWebHookService.handleCheckoutSessionCompleteEvent(checkoutSessionCompleted)
         break
 
       case 'checkout.session.expired':
-        const checkoutSessionExpired: Stripe.CheckoutSessionExpiredEvent = event
-        console.log(`Checkout session expired: ${checkoutSessionExpired} `)
+        console.log('Webhook: ', event.type)
+        // const checkoutSessionExpired: Stripe.Checkout.Session = event.data.object
+        break
+      case 'payment_intent.succeeded':
+        const paymentIntentSucceeded: Stripe.PaymentIntent = event.data.object
+        console.log('Webhook: ', event.type)
+        await this.stripeWebHookService.handlePaymentIntentSucceeded(paymentIntentSucceeded)
+        break
+      case 'payment_intent.canceled':
+      case 'payment_intent.payment_failed':
+        const paymentIntentPaymentFailed: Stripe.PaymentIntent = event.data.object
+        console.log('Webhook: ', event.type)
+        await this.stripeWebHookService.handlePaymentIntentPaymentFailed(paymentIntentPaymentFailed)
         break
 
       default:
@@ -54,10 +98,5 @@ export default class StripeWebHooksController {
     }
 
     return response.ok({})
-  }
-
-  async getAllPayments({ response }: HttpContext) {
-    const payment: any = await this.stripeWebHookService.getAllPayment(1, 1)
-    return response.ok({ payment: payment })
   }
 }

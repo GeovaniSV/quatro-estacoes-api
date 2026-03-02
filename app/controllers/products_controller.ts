@@ -15,6 +15,9 @@ import {
   openApiCreateProductValidator,
   updateProductValidator,
 } from '#validators/product_validator'
+import { uploadImageValidator } from '#validators/product_validator'
+
+import HTTPBadRequestException from '#exceptions/http_exceptions/http_bad_request_exception'
 
 @inject()
 export default class ProductsController {
@@ -36,17 +39,6 @@ export default class ProductsController {
     status: 201,
     description: 'Retorna um objeto do produto cadastrado',
     type: Product,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad Request',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Bad Request' },
-        code: { type: 'string', example: 'E_BAD_REQUEST' },
-      },
-    },
   })
   @ApiResponse({
     status: 401,
@@ -81,22 +73,32 @@ export default class ProductsController {
       },
     },
   })
+  @ApiResponse({
+    status: 422,
+    description: 'Bad Request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unprocessable Entity' },
+      },
+    },
+  })
   //create new product
   async store({ request, response }: HttpContext) {
-    // const { mainImage, images } = await request.validateUsing(uploadImageValidator)
+    const { mainImage, images } = await request.validateUsing(uploadImageValidator)
     const payload = await request.validateUsing(createProductValidator)
 
-    // if (!mainImage) throw new HTTPBadRequestException('Main image should be defined')
+    if (!mainImage) throw new HTTPBadRequestException('Main image should be defined')
 
     const product = await this.productService.create(payload)
 
-    // await this.productImageService.uploadProductImage(mainImage, product)
-    // if (images) {
-    //   await this.productImageService.uploadMultipleImages(images, product)
-    // }
-    // await product.save()
+    await this.productImageService.uploadProductImage(mainImage, product)
+    if (images) {
+      await this.productImageService.uploadMultipleImages(images, product)
+    }
+    await product.save()
 
-    // await product.load('images')
+    await product.load('images')
     return response.created({ data: product })
   }
 

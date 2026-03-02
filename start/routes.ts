@@ -41,4 +41,3 @@ router
 
 //StripeWebHooks public routes
 router.post('/stripe/webhook', [StripeWebHooksController, 'stripeListener'])
-router.get('/allpay', [StripeWebHooksController, 'getAllPayments'])

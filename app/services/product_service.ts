@@ -16,10 +16,12 @@ export class ProductService {
 
     if (hasProduct) throw new ProductAlreadyExistsException()
 
-    const product = await Product.create(data)
-
-    const priceView = this.moneyManagement.createView(product.productPrice)
-    product.merge({
+    const priceView = this.moneyManagement.createView(data.productPrice!)
+    const product = await Product.create({
+      productName: data.productName,
+      productDescription: data.productDescription,
+      productPrice: data.productPrice,
+      imagePublicId: data.imagePublicId,
       priceView: priceView,
     })
 
@@ -47,10 +49,16 @@ export class ProductService {
 
     if (!product) throw new ProductNotFoundException()
 
-    const priceView = this.moneyManagement.createView(product.productPrice)
-    data.priceView = priceView
+    const priceView = this.moneyManagement.createView(data.productPrice!)
 
-    product.merge(data)
+    console.log(priceView)
+
+    product.merge({
+      productName: data.productName,
+      productDescription: data.productDescription,
+      productPrice: data.productPrice,
+      priceView: priceView,
+    })
     await product.save()
 
     return product
