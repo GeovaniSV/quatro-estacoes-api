@@ -16,18 +16,12 @@
 |
 */
 
-import { Ignitor } from '@adonisjs/core'
-import { fileURLToPath } from 'node:url'
-import { dirname } from 'node:path'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-new Ignitor(__dirname).ace()
 /**
  * Register hook to process TypeScript files using ts-node
  */
+import 'ts-node-maintained/register/esm'
 
 /**
  * Import ace console entrypoint
  */
+await import('./bin/console.js')
