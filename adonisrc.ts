@@ -1,6 +1,7 @@
 import { defineConfig } from '@adonisjs/core/app'
 
 export default defineConfig({
+  typescript: true,
   /*
   |--------------------------------------------------------------------------
   | Experimental flags
@@ -47,7 +48,7 @@ export default defineConfig({
     () => import('@adonisjs/cors/cors_provider'),
     () => import('@adonisjs/lucid/database_provider'),
     () => import('@adonisjs/auth/auth_provider'),
-    () => import('@foadonis/openapi/openapi_provider')
+    () => import('@foadonis/openapi/openapi_provider'),
   ],
 
   /*

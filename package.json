@@ -5,7 +5,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "start": "node build/bin/server.js",
+    "start": "node ../build/bin/server.js",
     "build": "node ace build --production",
     "dev": "node build/ace.js serve --watch",
     "test": "node build/ace.js test",
