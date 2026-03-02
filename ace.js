@@ -23,4 +23,4 @@
 /**
  * Import ace console entrypoint
  */
-await import('./bin/console.js')
+await import('./bin/console')
