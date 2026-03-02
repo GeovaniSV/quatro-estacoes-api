@@ -5,10 +5,10 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "start": "node build/server.js",
-    "build": "node ace build --production",
-    "dev": "node build/ace.js serve --watch",
-    "test": "node build/ace.js test",
+    "start": "node bin/server.js",
+    "build": "node ace build",
+    "dev": "node ace serve --watch",
+    "test": "node ace test",
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
@@ -32,6 +32,7 @@
     "#config/*": "./config/*.js"
   },
   "devDependencies": {
+    "@adonisjs/assembler": "^7.8.2",
     "@adonisjs/eslint-config": "^2.0.0",
     "@adonisjs/prettier-config": "^1.4.4",
     "@adonisjs/tsconfig": "^1.4.0",
@@ -39,19 +40,18 @@
     "@japa/assert": "^4.0.1",
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.2.0",
+    "@swc/core": "1.11.24",
     "@types/luxon": "^3.7.1",
     "@types/node": "^22.15.18",
     "@types/nodemailer": "^7.0.4",
     "eslint": "^9.26.0",
     "hot-hook": "^0.4.0",
     "pino-pretty": "^13.0.0",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "ts-node-maintained": "^10.9.5",
+    "typescript": "~5.8"
   },
   "dependencies": {
-    "ts-node-maintained": "^10.9.5",
-    "typescript": "~5.8",
-    "@swc/core": "1.11.24",
-    "@adonisjs/assembler": "^7.8.2",
     "@adonisjs/auth": "^9.4.0",
     "@adonisjs/core": "^6.18.0",
     "@adonisjs/cors": "^2.2.1",
