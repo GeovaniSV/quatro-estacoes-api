@@ -16,6 +16,9 @@
 |
 */
 
+import { Ignitor } from '@adonisjs/core'
+
+new Ignitor(__dirname).ace()
 /**
  * Register hook to process TypeScript files using ts-node
  */
@@ -23,4 +26,3 @@
 /**
  * Import ace console entrypoint
  */
-await import('./bin/console')
