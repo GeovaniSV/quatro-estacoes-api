@@ -16,11 +16,16 @@
 |
 */
 
-/**
- * Register hook to process TypeScript files using ts-node
- */
-import 'ts-node-maintained/register/esm'
+import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
+import { dirname, resolve } from 'node:path'
 
+const require = createRequire(import.meta.url)
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+// Register ts-node-maintained ESM loader
+const tsNodePath = resolve(__dirname, 'node_modules/ts-node-maintained/register/esm.js')
+await import(tsNodePath)
 /**
  * Import ace console entrypoint
  */
