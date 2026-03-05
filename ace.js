@@ -16,7 +16,7 @@
 |
 */
 
-import 'ts-node-maintained/register/esm'
+import 'ts-node/esm'
 /**
  * Import ace console entrypoint
  */
