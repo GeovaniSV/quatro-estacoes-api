@@ -57,10 +57,7 @@ export default class UsersController {
   async register({ request, response }: HttpContext) {
     const requestPayload = await request.validateUsing(createUserRequestBody)
 
-    const userRequest = requestPayload.user
-    const profileRequest = requestPayload.profile
-
-    const user = await this.userService.register(userRequest, profileRequest)
+    const user = await this.userService.register(requestPayload)
 
     return response.created({ data: user })
   }

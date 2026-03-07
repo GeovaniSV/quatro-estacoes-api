@@ -15,6 +15,9 @@
 | and then imports the "bin/console.ts" file.
 |
 */
+
+import 'ts-node-maintained/register/esm'
+
 /**
  * Import ace console entrypoint
  */

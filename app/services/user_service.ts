@@ -3,7 +3,6 @@ import db from '@adonisjs/lucid/services/db'
 //models
 import User from '#models/user'
 import Cart from '#models/cart'
-import Profile from '#models/profile'
 
 //exceptions
 import { UserNotFoundException } from '#exceptions/users_exceptions/user_not_found_exception'
@@ -15,7 +14,7 @@ import { InternalErrorException } from '#exceptions/internal_error_exception'
 import { createCartValidator } from '#validators/cart_validator'
 
 export class UserService {
-  async register(userData: Partial<User>, profileData: Partial<Profile>) {
+  async register(userData: Partial<User>) {
     const hasUser = await User.findBy('email', userData.email)
 
     if (hasUser) throw new UserAlreadyExistsException()
@@ -24,10 +23,6 @@ export class UserService {
       userData.role = 'ADMIN'
     }
     const user = await User.create(userData)
-
-    profileData.user_id = user.id
-
-    await Profile.create(profileData)
 
     const cartData = {
       user_id: Number(user.id),
@@ -42,19 +37,18 @@ export class UserService {
       throw new InternalErrorException()
     }
 
-    await user.load('profile')
     await user.load('cart')
 
     return { user }
   }
 
   async login(data: Partial<User>) {
-    console.log('chego?')
     console.log(data.email)
     console.log(data.password)
     if (!data.email || !data.password) throw new UserInvalidCredentialsException()
+    console.log('porque?')
     const user = await User.verifyCredentials(data.email, data.password)
-    console.log(user)
+    console.log('em?')
     const token = await User.accessTokens.create(user, [user.role])
 
     return token
