@@ -42,13 +42,9 @@ export class UserService {
     return { user }
   }
 
-  async login(data: Partial<User>) {
-    console.log(data.email)
-    console.log(data.password)
-    if (!data.email || !data.password) throw new UserInvalidCredentialsException()
-    console.log('porque?')
-    const user = await User.verifyCredentials(data.email, data.password)
-    console.log('em?')
+  async login(email: string, password: string) {
+    const user = await User.verifyCredentials(email, password)
+
     const token = await User.accessTokens.create(user, [user.role])
 
     return token

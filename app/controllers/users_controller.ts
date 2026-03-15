@@ -112,11 +112,11 @@ export default class UsersController {
     },
   })
   async login({ request, response }: HttpContext) {
-    const payload = await request.validateUsing(loginUserValidator)
+    const { email, password } = await request.validateUsing(loginUserValidator)
 
-    const token = await this.userService.login(payload)
+    const userData = await this.userService.login(email, password)
 
-    return response.ok({ data: token })
+    return response.ok({ userData })
   }
 
   @ApiOperation({
