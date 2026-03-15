@@ -99,7 +99,7 @@ export default class ProductsController {
     await product.save()
 
     await product.load('images')
-    return response.created({ data: product })
+    return response.created(product)
   }
 
   @ApiOperation({
@@ -127,7 +127,8 @@ export default class ProductsController {
     const page = request.input('page')
     const limit = request.input('limit')
     const products = await this.productService.getAll(page, limit)
-    return response.ok({ data: products })
+
+    return response.ok(products)
   }
 
   @ApiOperation({
@@ -153,7 +154,7 @@ export default class ProductsController {
   //show unique product
   async show({ params, response }: HttpContext) {
     const product = await this.productService.getById(params.id)
-    return response.ok({ data: product })
+    return response.ok(product)
   }
 
   @ApiOperation({
