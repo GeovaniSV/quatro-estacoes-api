@@ -28,8 +28,16 @@ export class ProductService {
     return product
   }
 
-  async getAll(page: number, limit: number) {
-    const products = await db.from('products').paginate(page, limit)
+  async getAll(page: number, limit: number, filterColunm?: string, filter?: string) {
+    let products
+    if (filterColunm && filter) {
+      products = await db
+        .from('products')
+        .whereLike(filterColunm, `%${filter}%`)
+        .paginate(page, limit)
+    } else {
+      products = await db.from('products').paginate(page, limit)
+    }
     if (!products || products.length === 0) throw new ProductNotFoundException()
 
     return products

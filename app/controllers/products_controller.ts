@@ -126,7 +126,9 @@ export default class ProductsController {
   async index({ request, response }: HttpContext) {
     const page = request.input('page')
     const limit = request.input('limit')
-    const products = await this.productService.getAll(page, limit)
+    const filterColumn = request.input('filterColumn')
+    const filter = request.input('filter')
+    const products = await this.productService.getAll(page, limit, filterColumn, filter)
 
     return response.ok(products)
   }
