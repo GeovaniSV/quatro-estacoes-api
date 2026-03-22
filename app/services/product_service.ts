@@ -5,7 +5,7 @@ import { inject } from '@adonisjs/core'
 //Exceptions
 import { ProductAlreadyExistsException } from '#exceptions/products_exceptions/product_already_exists_exception'
 import { ProductNotFoundException } from '#exceptions/products_exceptions/product_not_found_exception'
-import { ProductFilter, ProductFilters } from '../filters/product_filters.js'
+import { ProductFilter, ProductFilters } from '../filters/products_filters.js'
 
 @inject()
 export class ProductService {

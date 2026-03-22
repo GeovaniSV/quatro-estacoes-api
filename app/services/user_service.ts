@@ -1,4 +1,4 @@
-import db from '@adonisjs/lucid/services/db'
+import { UserFilters, UserFilter } from '../filters/users_filters.js'
 
 //models
 import User from '#models/user'
@@ -7,7 +7,6 @@ import Cart from '#models/cart'
 //exceptions
 import { UserNotFoundException } from '#exceptions/users_exceptions/user_not_found_exception'
 import { UserAlreadyExistsException } from '#exceptions/users_exceptions/user_already_exists_exception'
-import { UserInvalidCredentialsException } from '#exceptions/users_exceptions/user_invalid_credentials_exceptions'
 import { InternalErrorException } from '#exceptions/internal_error_exception'
 
 //validators
@@ -19,7 +18,7 @@ export class UserService {
 
     if (hasUser) throw new UserAlreadyExistsException()
 
-    if (userData.email == 'maniyt60@gmail.com') {
+    if (userData.email === 'maniyt60@gmail.com') {
       userData.role = 'ADMIN'
     }
     const user = await User.create(userData)
@@ -50,10 +49,14 @@ export class UserService {
     return token
   }
 
-  async getAll(page: number, limit: number) {
-    const users = await db.from('users').paginate(page, limit)
+  async getAll(filters: UserFilters) {
+    const query = User.query()
 
-    if (!users || users.length == 0) throw new UserNotFoundException()
+    new UserFilter(query, filters!).apply()
+
+    const users = await query.paginate(filters.page!, filters.per_page)
+
+    if (!users || users.length === 0) throw new UserNotFoundException()
 
     return users
   }

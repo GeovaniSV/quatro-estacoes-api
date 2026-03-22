@@ -11,6 +11,7 @@ import {
   createUserRequestBody,
   loginUserValidator,
   updateUserValidator,
+  userFilterValidator,
 } from '#validators/user_validator'
 
 //exceptions
@@ -149,10 +150,9 @@ export default class UsersController {
   })
   //query all users by page and limit from query params
   async index({ request, response }: HttpContext) {
-    const page = request.input('page')
-    const limit = request.input('limit')
+    const filters = await request.validateUsing(userFilterValidator)
 
-    const data = await this.userService.getAll(page, limit)
+    const data = await this.userService.getAll(filters)
     return response.ok({ data })
   }
 

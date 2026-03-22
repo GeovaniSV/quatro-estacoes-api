@@ -35,4 +35,18 @@ const loginUserValidator = vine.compile(
   })
 )
 
-export { createUserRequestBody, updateUserValidator, loginUserValidator, userAddress }
+const userFilterValidator = vine.compile(
+  vine.object({
+    name: vine.string().trim().minLength(1).optional(),
+    email: vine.string().trim().email().optional(),
+    cpf: vine.string().trim().use(cpfRule()).optional(),
+  })
+)
+
+export {
+  createUserRequestBody,
+  updateUserValidator,
+  loginUserValidator,
+  userAddress,
+  userFilterValidator,
+}
