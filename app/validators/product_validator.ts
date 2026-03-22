@@ -48,9 +48,22 @@ const openApiCreateProductValidator = vine.compile(
   })
 )
 
+const productFilterValidator = vine.compile(
+  vine.object({
+    name: vine.string().trim().minLength(1).optional(),
+
+    min_price: vine.number().positive().optional(),
+    max_price: vine.number().positive().optional(),
+
+    page: vine.number().min(1).optional(),
+    per_page: vine.number().min(1).max(100).optional(),
+  })
+)
+
 export {
   createProductValidator,
   updateProductValidator,
   uploadImageValidator,
   openApiCreateProductValidator,
+  productFilterValidator,
 }

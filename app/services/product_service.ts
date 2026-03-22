@@ -1,11 +1,11 @@
 import Product from '#models/product'
-import db from '@adonisjs/lucid/services/db'
 import { MoneyManagement } from '../utils/money.js'
 import { inject } from '@adonisjs/core'
 
 //Exceptions
 import { ProductAlreadyExistsException } from '#exceptions/products_exceptions/product_already_exists_exception'
 import { ProductNotFoundException } from '#exceptions/products_exceptions/product_not_found_exception'
+import { ProductFilter, ProductFilters } from '../filters/product_filters.js'
 
 @inject()
 export class ProductService {
@@ -28,16 +28,13 @@ export class ProductService {
     return product
   }
 
-  async getAll(page: number, limit: number, filterColunm?: string, filter?: string) {
-    let products
-    if (filterColunm && filter) {
-      products = await db
-        .from('products')
-        .whereLike(filterColunm, `%${filter}%`)
-        .paginate(page, limit)
-    } else {
-      products = await db.from('products').paginate(page, limit)
-    }
+  async getAll(filters: ProductFilters) {
+    const query = Product.query()
+
+    new ProductFilter(query, filters!).apply()
+
+    const products = await query.preload('images').paginate(filters.page!, filters.per_page)
+
     if (!products || products.length === 0) throw new ProductNotFoundException()
 
     return products

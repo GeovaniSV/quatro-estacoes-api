@@ -14,6 +14,7 @@ import {
   createProductValidator,
   openApiCreateProductValidator,
   updateProductValidator,
+  productFilterValidator,
 } from '#validators/product_validator'
 import { uploadImageValidator } from '#validators/product_validator'
 
@@ -124,11 +125,8 @@ export default class ProductsController {
   })
   //query all products by page and limit from query params
   async index({ request, response }: HttpContext) {
-    const page = request.input('page')
-    const limit = request.input('limit')
-    const filterColumn = request.input('filterColumn')
-    const filter = request.input('filter')
-    const products = await this.productService.getAll(page, limit, filterColumn, filter)
+    const filters = await request.validateUsing(productFilterValidator)
+    const products = await this.productService.getAll(filters)
 
     return response.ok(products)
   }
