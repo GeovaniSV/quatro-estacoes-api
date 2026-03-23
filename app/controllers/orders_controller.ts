@@ -1,14 +1,14 @@
+import Order from '#models/order'
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
 import { ApiOperation, ApiBody, ApiResponse, ApiBearerAuth } from '@foadonis/openapi/decorators'
 
 //services
 import { OrderService } from '#services/order_service'
-import { updateOrder } from '#validators/order'
+import { orderFiltersValidator, updateOrder } from '#validators/order_validator'
 
 //exceptions
 import { UnauthorizedException } from '#exceptions/unauthorized_access_exception'
-import Order from '#models/order'
 
 @inject()
 export default class OrdersController {
@@ -58,9 +58,8 @@ export default class OrdersController {
     },
   })
   async index({ response, request }: HttpContext) {
-    const page = request.input('page')
-    const limit = request.input('limit')
-    const orders = await this.orderService.getAllOrder(page, limit)
+    const filters = await request.validateUsing(orderFiltersValidator)
+    const orders = await this.orderService.getAllOrder(filters)
     return response.ok({ orders })
   }
 

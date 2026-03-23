@@ -10,6 +10,7 @@ import { CartNotFoundException } from '#exceptions/carts_exceptions/cart_not_fou
 import { UserNotFoundException } from '#exceptions/users_exceptions/user_not_found_exception'
 import { SendEmail } from '../utils/handleEmail.js'
 import HTTPInternalErrorException from '#exceptions/http_exceptions/HTTP_internal_error_execption'
+import { OrderFilter, OrderFilters } from '../filters/orders_filters.js'
 
 @inject()
 export class OrderService {
@@ -64,13 +65,14 @@ export class OrderService {
     }
   }
 
-  async getAllOrder(page: number, limit: number) {
-    const orders = await Order.query()
-      .preload('user')
-      .preload('OrderItems')
-      .preload('payment')
-      .paginate(page, limit)
-    if (!orders || OrderService.length == 0) throw new HTTPNotFoundException('Orders not found')
+  async getAllOrder(filters: OrderFilters) {
+    const query = Order.query().preload('user')
+    new OrderFilter(query, filters).apply()
+
+    const orders = await query.paginate(filters.page!, filters.per_page)
+
+    if (!orders || OrderService.length === 0) throw new HTTPNotFoundException('Orders not found')
+
     return orders
   }
 
