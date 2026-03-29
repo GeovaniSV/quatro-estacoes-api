@@ -5,7 +5,7 @@ import Product from '#models/product'
 type Query = ModelQueryBuilderContract<typeof Product>
 
 interface ProductFilters {
-  name?: string
+  name?: string[]
   min_price?: number
   max_price?: number
   page?: number
@@ -26,7 +26,9 @@ class ProductFilter {
 
   private filterByName() {
     if (this.filters.name) {
-      this.query.whereLike('product_name', `%${this.filters.name}%`)
+      for (const name of this.filters.name) {
+        this.query.orWhere('product_name', 'like', `%${name}%`)
+      }
     }
     return this
   }

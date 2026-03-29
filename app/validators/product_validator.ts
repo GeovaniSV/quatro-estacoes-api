@@ -50,7 +50,7 @@ const openApiCreateProductValidator = vine.compile(
 
 const productFilterValidator = vine.compile(
   vine.object({
-    name: vine.string().trim().minLength(1).optional(),
+    name: vine.array(vine.string().optional()).optional(),
 
     min_price: vine.number().positive().optional(),
     max_price: vine.number().positive().optional(),

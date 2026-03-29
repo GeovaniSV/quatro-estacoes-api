@@ -125,7 +125,9 @@ export default class ProductsController {
   })
   //query all products by page and limit from query params
   async index({ request, response }: HttpContext) {
+    console.log('entrou no index ' + request.qs())
     const filters = await request.validateUsing(productFilterValidator)
+    console.log(filters)
     const products = await this.productService.getAll(filters)
 
     return response.ok(products)
