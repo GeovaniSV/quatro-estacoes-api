@@ -61,9 +61,7 @@ export class ProductImageService {
 
       const publicIds: string[] = []
       if (validImages.length > 0) {
-        for (let i = 0; i < additionalImages.length; i++) {
-          const file = additionalImages[i]
-
+        for (const [i, file] of additionalImages.entries()) {
           const result = await cloudinary.uploader.upload(file.tmpPath!, {
             folder: `products/${productNameReplaced}`,
             public_id: `produto_${product.id}_img_${i + 1}_${Date.now()}`,

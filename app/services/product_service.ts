@@ -28,12 +28,12 @@ export class ProductService {
     return product
   }
 
-  async getAll(filters: ProductFilters) {
+  async getAll(filters?: ProductFilters) {
     const query = Product.query()
 
     new ProductFilter(query, filters!).apply()
 
-    const products = await query.preload('images').paginate(filters.page!, filters.per_page)
+    const products = await query.preload('images').paginate(filters?.page!, filters?.per_page!)
 
     if (!products || products.length === 0) throw new ProductNotFoundException()
 
